@@ -96,12 +96,12 @@ def orient_test(p, q, r):
 
 
 def visible(pts, j, u):
-    for i in range(j + 1, u):
+    for i in range(u+1, j):
         if pts[i].chain == "lower" and orient_test(pts[j].pt, pts[i].pt, pts[u].pt) >= 0:
             return False
         elif pts[i].chain == "upper" and orient_test(pts[j].pt, pts[i].pt, pts[u].pt) <= 0:
             return False
-    return True
+    return (j - (1 + u)) > 0
 
 
 # whereas I could implement merge to merge the two queues, I'm kinda lazy
@@ -122,10 +122,11 @@ def x_monotone_triangulation(pts: list):
             stack.insert(0, j)
         else:
             u = u_l = stack.pop(0)
-            while visible(pts, j, u):
+            while stack and visible(pts, j, u):
                 diagonals.append(LineSegment(pts[u].pt, pts[j].pt))
                 show_polygon_with_diagonals(pts, diagonals, True)
-                u = stack.pop(0)
+                if stack:
+                    u = stack.pop(0)
             stack.insert(0, u_l)
             stack.insert(0, j)
     for u in stack[1:-1]:
