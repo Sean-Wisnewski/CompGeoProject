@@ -9,5 +9,18 @@ def show_polygon(pts):
         if idx < len(pts)-1:
             pt2 = pts[idx+1]
             ax.plot([pt.x, pt2.x], [pt.y, pt2.y], color='r')
-        plt.plot([pts[0].x, pts[-1].x], [pts[0].y, pts[-1].y], color='r')
-    plt.show()
+    plt.plot([pts[0].x, pts[-1].x], [pts[0].y, pts[-1].y], color='r')
+    return fig, ax
+
+
+def show_polygon_with_diagonals(pts, diags):
+    """
+    diags = [(pt0, pt1), ...()]
+    :param pts:
+    :param diags:
+    :return:
+    """
+    fig, ax = show_polygon(pts)
+    for diag in diags:
+        ax.plot([diag[0].x, diag[1].x], [diag[0].y, diag[1].y], color='green')
+    return fig, ax
