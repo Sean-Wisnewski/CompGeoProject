@@ -1,54 +1,8 @@
-import numpy as np
 import math
 from heapq import heappush, heappop, heappushpop, heapify
-from functools import total_ordering
-from matplotlib import pyplot as plt
 
-from visualizations import show_polygon
-
-
-@total_ordering
-class Point:
-    """
-    Class to represent a 2d point in space
-    """
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return f"x: {self.x} y: {self.y}"
-
-    def __eq__(self, pt2):
-        return self.x == pt2.x and self.y == pt2.y
-
-    def __lt__(self, pt2):
-        return self.x <= pt2.x
-
-
-class StackElement:
-    def __init__(self, pt, chain):
-        self.pt = pt
-        self.chain = chain
-
-    def __repr__(self):
-        return f"[({self.pt}), {self.chain}]"
-
-    def __eq__(self, other):
-        return self.pt == other.pt
-
-
-class LineSegment:
-    def __init__(self, pt0, pt1):
-        self.pt0 = pt0
-        self.pt1 = pt1
-
-    def __repr__(self):
-        return f"[({self.pt0}), ({self.pt1})]"
-
-    def __eq__(self, e2):
-        return self.pt0 == e2.pt0 and self.pt1 == e2.pt1
+from SupportClasses import StackElement, LineSegment, Point
+from visualizations import show_polygon_with_diagonals
 
 
 def compute_interior_angle(pt0, pt1, pt2):
@@ -158,21 +112,25 @@ def x_monotone_triangulation(pts: list):
     # u = stack[0]
     diagonals = []
 
-    for j in range(2, len(pts) - 2):
+    for j in range(2, len(pts) - 1):
         if pts[stack[0]].chain != pts[j].chain:
             for u in stack[:-1]:
                 diagonals.append(LineSegment(pts[u].pt, pts[j].pt))
+                show_polygon_with_diagonals(pts, diagonals, True)
+            stack = []
             stack.insert(0, j - 1)
             stack.insert(0, j)
         else:
             u = u_l = stack.pop(0)
             while visible(pts, j, u):
                 diagonals.append(LineSegment(pts[u].pt, pts[j].pt))
+                show_polygon_with_diagonals(pts, diagonals, True)
                 u = stack.pop(0)
             stack.insert(0, u_l)
             stack.insert(0, j)
     for u in stack[1:-1]:
         diagonals.append(LineSegment(pts[u].pt, pts[-1].pt))
+        show_polygon_with_diagonals(pts, diagonals, True)
     return diagonals
     # while len(pts) > 1:
     #     vi = pts.pop()
@@ -217,26 +175,3 @@ def x_monotone_triangulation(pts: list):
     #             stack.append(vi)
     # return diagonals
 
-
-pts = (read_input_to_pts_list("inputs/simple_all_positive.txt"))
-
-show_polygon(pts)
-
-upper, lower = split_to_chains(pts)
-
-show_polygon(upper, False)
-
-show_polygon(lower, False)
-
-all_pts = split_to_chains(pts, True)
-
-show_polygon([pt.pt for pt in all_pts], False)
-
-all_pts = (list(reversed(all_pts)))
-print(all_pts)
-
-print(check_monotonicity(pts))
-diags = x_monotone_triangulation(all_pts)
-print(diags)
-# #print(check_monotonicity(upper) and check_monotonicity(lower))
-#
