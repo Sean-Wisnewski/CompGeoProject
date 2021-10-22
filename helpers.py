@@ -126,7 +126,7 @@ def check_vertex_reflexive(vi, vi_1, vi_2):
         return False
 
 def orient_test(p, q, r):
-    matrix = np.array([1,1,1], [p.x, q.x, r.x], [p.y, q.y, r.y]).T
+    matrix = np.array([[1,1,1], [p.x, q.x, r.x], [p.y, q.y, r.y]]).T
     return np.linalg.det(matrix)
 
 # whereas I could implement merge to merge the two queues, I'm kinda lazy
@@ -139,29 +139,37 @@ def x_monotone_triangulation(pts : list):
         vi_last = stack[-1]
         # case 1: vi and vi-1 on opposite chains:
         if vi.chain != vi_last.chain:
-            for idx in range(len(stack)-1, -1):
+            for idx in range(len(stack)-1, -1, -1):
                 if stack[idx] != u:
                     diagonals.append(LineSegment(stack[idx], vi))
             u = vi_last
         # case 2: vi on same chain as vi-1
         else:
             # i.e. vi-1 is a non-reflex vertex
-            if not check_vertex_reflexive(vi, vi_last, stack[-2]):
+            if not check_vertex_reflexive(vi.pt, vi_last.pt, stack[-2].pt):
                 # add diagonals until no more vertices can be seen from vi
-                if vi.chain == "upper":
+                if vi.chain == "lower":
                     visible = True
-                    while visible:
+                    can_continue = True
+                    while visible and can_continue:
                         q = stack[-1]
                         r = stack[-2]
-                        test_one = orient_test(vi, q, r)
-                        test_two = orient_test(q, r, vi)
-                        test_three = orient_test(r, vi, q)
-                        if test_one < 0 and test_two < 0 and test_three < 0:
-                            vi_last = stack.pop()
-                            diagonals.append(LineSegment(vi_last, vi))
-                        else:
-                            visible = False
-
+                        q_visible = True if orient_test(vi.pt, q.pt, r.pt)< 0 else False
+                        if q_visible:
+                            diagonals.append(LineSegment(vi.pt, q.pt))
+                            can_continue = True if orient_test(vi.pt, r.pt, q.pt) > 0 else False
+                            stack.pop()
+                else:
+                    visible = True
+                    can_continue = True
+                    while visible and can_continue:
+                        q = stack[-1]
+                        r = stack[-2]
+                        q_visible = True if orient_test(vi.pt, q.pt, r.pt) > 0 else False
+                        if q_visible:
+                            diagonals.append(LineSegment(vi.pt, q.pt))
+                            can_continue = True if orient_test(vi.pt, r.pt, q.pt) < 0 else False
+                            stack.pop()
             # vi-1 is a reflex vertex, so just add vi to the stack
             else:
                 stack.append(vi)
@@ -173,6 +181,8 @@ upper, lower = split_to_chains(pts)
 all_pts = split_to_chains(pts, True)
 print(check_monotonicity(pts))
 print(check_monotonicity([pt.pt for pt in all_pts]))
-print(all_pts)
+all_pts = (list(reversed(all_pts)))
+diags = x_monotone_triangulation(all_pts)
+print(diags)
 #print(check_monotonicity(upper) and check_monotonicity(lower))
 
