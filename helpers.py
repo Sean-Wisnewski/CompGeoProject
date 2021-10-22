@@ -2,6 +2,7 @@ import numpy as np
 import math
 from heapq import heappush, heappop, heappushpop, heapify
 from functools import total_ordering
+from matplotlib import pyplot as plt
 
 @total_ordering
 class Point:
@@ -93,9 +94,12 @@ def split_to_chains(pts, as_one_list=False):
     upper_as_list = []
     lower_as_list = []
     for idx, pt in enumerate(pts):
-        if max_idx <= idx < min_idx:
+        if max_idx < idx < min_idx:
             heappush(lower, pt)
+        elif max_idx > idx or idx > min_idx:
+            heappush(upper, pt)
         else:
+            heappush(lower, pt)
             heappush(upper, pt)
     if not as_one_list:
         while len(upper) > 0:
@@ -126,8 +130,7 @@ def check_vertex_reflexive(vi, vi_1, vi_2):
         return False
 
 def orient_test(p, q, r):
-    matrix = np.array([[1,1,1], [p.x, q.x, r.x], [p.y, q.y, r.y]]).T
-    return np.linalg.det(matrix)
+    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
 # whereas I could implement merge to merge the two queues, I'm kinda lazy
 def x_monotone_triangulation(pts : list):
@@ -154,10 +157,11 @@ def x_monotone_triangulation(pts : list):
                     while visible and can_continue:
                         q = stack[-1]
                         r = stack[-2]
-                        q_visible = True if orient_test(vi.pt, q.pt, r.pt)< 0 else False
+                        #Todo fix
+                        q_visible = orient_test(vi.pt, q.pt, r.pt) < 0
                         if q_visible:
                             diagonals.append(LineSegment(vi.pt, q.pt))
-                            can_continue = True if orient_test(vi.pt, r.pt, q.pt) > 0 else False
+                            can_continue = orient_test(vi.pt, r.pt, q.pt) > 0
                             stack.pop()
                 else:
                     visible = True
@@ -165,10 +169,11 @@ def x_monotone_triangulation(pts : list):
                     while visible and can_continue:
                         q = stack[-1]
                         r = stack[-2]
-                        q_visible = True if orient_test(vi.pt, q.pt, r.pt) > 0 else False
+                        #Todo fix
+                        q_visible = orient_test(vi.pt, q.pt, r.pt) > 0
                         if q_visible:
                             diagonals.append(LineSegment(vi.pt, q.pt))
-                            can_continue = True if orient_test(vi.pt, r.pt, q.pt) < 0 else False
+                            can_continue = orient_test(vi.pt, r.pt, q.pt) < 0
                             stack.pop()
             # vi-1 is a reflex vertex, so just add vi to the stack
             else:
@@ -177,12 +182,28 @@ def x_monotone_triangulation(pts : list):
 
 
 pts = (read_input_to_pts_list("inputs/simple_all_positive.txt"))
+X = [pt.x for pt in pts + [pts[0]]]
+Y = [pt.y for pt in pts + [pts[0]]]
+plt.plot(X, Y)
+plt.show()
 upper, lower = split_to_chains(pts)
-all_pts = split_to_chains(pts, True)
-print(check_monotonicity(pts))
-print(check_monotonicity([pt.pt for pt in all_pts]))
-all_pts = (list(reversed(all_pts)))
-diags = x_monotone_triangulation(all_pts)
-print(diags)
-#print(check_monotonicity(upper) and check_monotonicity(lower))
 
+upper_X = [pt.x for pt in upper]
+upper_Y = [pt.y for pt in upper]
+plt.plot(upper_X, upper_Y)
+plt.show()
+
+
+lower_X = [pt.x for pt in lower]
+lower_Y = [pt.y for pt in lower]
+plt.plot(lower_X, lower_Y)
+plt.show()
+
+# all_pts = split_to_chains(pts, True)
+# print(check_monotonicity(pts))
+# print(check_monotonicity([pt.pt for pt in all_pts]))
+# all_pts = (list(reversed(all_pts)))
+# diags = x_monotone_triangulation(all_pts)
+# print(diags)
+# #print(check_monotonicity(upper) and check_monotonicity(lower))
+#
