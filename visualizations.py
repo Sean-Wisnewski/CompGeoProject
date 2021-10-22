@@ -11,4 +11,17 @@ def show_polygon(pts, end_connection=True):
             ax.plot([pt.x, pt2.x], [pt.y, pt2.y], color='r')
     if end_connection:
         plt.plot([pts[0].x, pts[-1].x], [pts[0].y, pts[-1].y], color='r')
-    plt.show()
+    return fig, ax
+
+
+def show_polygon_with_diagonals(pts, diags):
+    """
+    diags = [(pt0, pt1), ...()]
+    :param pts:
+    :param diags:
+    :return:
+    """
+    fig, ax = show_polygon(pts)
+    for diag in diags:
+        ax.plot([diag[0].x, diag[1].x], [diag[0].y, diag[1].y], color='green')
+    return fig, ax
