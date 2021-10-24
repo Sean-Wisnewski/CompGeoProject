@@ -133,46 +133,5 @@ def x_monotone_triangulation(pts: list):
         diagonals.append(LineSegment(pts[u].pt, pts[-1].pt))
         show_polygon_with_diagonals(pts, diagonals, True)
     return diagonals
-    # while len(pts) > 1:
-    #     vi = pts.pop()
-    #     vi_last = stack[-1]
-    #     # case 1: vi and vi-1 on opposite chains:
-    #     if vi.chain != vi_last.chain:
-    #         for idx in range(len(stack)-1, -1, -1):
-    #             if stack[idx] != u:
-    #                 diagonals.append(LineSegment(stack[idx], vi))
-    #         u = vi_last
-    #     # case 2: vi on same chain as vi-1
-    #     else:
-    #         # i.e. vi-1 is a non-reflex vertex
-    #         if not check_vertex_reflexive(vi.pt, vi_last.pt, stack[-2].pt):
-    #             # add diagonals until no more vertices can be seen from vi
-    #             if vi.chain == "lower":
-    #                 visible = True
-    #                 can_continue = True
-    #                 while visible and can_continue:
-    #                     q = stack[-1]
-    #                     r = stack[-2]
-    #                     #Todo fix
-    #                     q_visible = orient_test(vi.pt, q.pt, r.pt) < 0
-    #                     if q_visible:
-    #                         diagonals.append(LineSegment(vi.pt, q.pt))
-    #                         can_continue = orient_test(vi.pt, r.pt, q.pt) > 0
-    #                         stack.pop()
-    #             else:
-    #                 visible = True
-    #                 can_continue = True
-    #                 while visible and can_continue:
-    #                     q = stack[-1]
-    #                     r = stack[-2]
-    #                     #Todo fix
-    #                     q_visible = orient_test(vi.pt, q.pt, r.pt) > 0
-    #                     if q_visible:
-    #                         diagonals.append(LineSegment(vi.pt, q.pt))
-    #                         can_continue = orient_test(vi.pt, r.pt, q.pt) < 0
-    #                         stack.pop()
-    #         # vi-1 is a reflex vertex, so just add vi to the stack
-    #         else:
-    #             stack.append(vi)
-    # return diagonals
+
 

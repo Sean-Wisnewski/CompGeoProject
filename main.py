@@ -4,7 +4,7 @@ from helpers import read_input_to_pts_list, split_to_chains, check_monotonicity,
 from visualizations import show_polygon, show_polygon_with_diagonals
 
 if __name__ == '__main__':
-    pts = (read_input_to_pts_list("inputs/simple_curve.txt"))
+    pts = (read_input_to_pts_list("inputs/simple_all_positive.txt"))
 
     show_polygon(pts)
 
