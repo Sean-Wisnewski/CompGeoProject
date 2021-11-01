@@ -5,7 +5,6 @@ from visualizations import show_polygon, show_polygon_with_diagonals
 
 if __name__ == '__main__':
     pts = (read_input_to_pts_list("inputs/simple_all_positive.txt"))
-    print(pts)
 
     show_polygon(pts)
 
