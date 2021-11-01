@@ -1,4 +1,5 @@
 from functools import total_ordering
+from enum import Enum
 
 
 @total_ordering
@@ -38,9 +39,16 @@ class StackElement:
 
 
 class LineSegment:
+    """
+    Since line segments are undirected, always put the point further to the right as the right endpoint
+    """
     def __init__(self, pt0, pt1, name):
-        self.pt0 = pt0
-        self.pt1 = pt1
+        if pt0.x < pt1.x:
+            self.pt0 = pt0
+            self.pt1 = pt1
+        else:
+            self.pt0 = pt1
+            self.pt1 = pt0
         self.name=name
 
     def __repr__(self):
@@ -48,3 +56,12 @@ class LineSegment:
 
     def __eq__(self, e2):
         return self.pt0 == e2.pt0 and self.pt1 == e2.pt1
+
+class SubdivEvent(Enum):
+    SPLIT=1,
+    MERGE=2,
+    START=3,
+    END=4,
+    UPPER=5,
+    LOWER=6
+    UNIMPL=7

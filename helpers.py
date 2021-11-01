@@ -5,7 +5,7 @@ from SupportClasses import StackElement, LineSegment, Point
 from visualizations import show_polygon_with_diagonals
 
 
-def compute_interior_angle(pt0, pt1, pt2):
+def compute_interior_angle(pt0, pt1, pt2, abs_val=False):
     """
     Computes the interior angle of a vertex given 3 points.
     NOTE: Assumes that *pt0* is the vertex you would like to find the interior angle of
@@ -15,10 +15,13 @@ def compute_interior_angle(pt0, pt1, pt2):
     :return:
     """
     angle = math.atan2(pt1.y - pt0.y, pt1.x - pt0.x) - math.atan2(pt2.y - pt0.y, pt2.x - pt0.x)
-    if angle < 0:
-        angle += 2 * math.pi
-    elif angle > 2 * math.pi:
-        angle -= 2 * math.pi
+    if abs_val:
+        return abs(angle)
+    else:
+        if angle < 0:
+            angle += 2 * math.pi
+        elif angle > 2 * math.pi:
+            angle -= 2 * math.pi
     return angle
 
 
