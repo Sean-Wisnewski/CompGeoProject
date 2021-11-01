@@ -24,13 +24,34 @@ def compute_interior_angle(pt0, pt1, pt2):
 
 def read_input_to_pts_list(fname):
     pts = []
+    count = 0
     with open(fname, "r") as f:
         lines = f.readlines()
         for line in lines:
             vals = line.split(" ")
             # assumes that vals is only of len 2 (i.e. 2 pts
-            pts.append(Point(float(vals[0]), float(vals[1])))
+            pts.append(Point(float(vals[0]), float(vals[1]), count))
+            count += 1
     return pts
+
+def segs_from_pts(pts):
+    # run on the raw pts list before splitting to chains
+    segs = []
+    pt_to_segs_dict = {pt:[] for pt in pts}
+    count = 0
+    for idx, pt in enumerate(pts):
+        if idx != len(pts)-1:
+            seg = LineSegment(pt, pts[idx+1], f"S{count}")
+            segs.append(seg)
+            pt_to_segs_dict[pt].append(seg)
+            pt_to_segs_dict[pts[idx+1]].append(seg)
+            count += 1
+        else:
+            seg = LineSegment(pt, pts[0], f"S{count}")
+            segs.append(seg)
+            pt_to_segs_dict[pt].append(seg)
+            pt_to_segs_dict[pts[0]].append(seg)
+    return segs, pt_to_segs_dict
 
 
 def check_monotonicity(pts, dir='x'):
@@ -109,7 +130,6 @@ def x_monotone_triangulation(pts: list):
     stack = []
     stack.insert(0, 0)
     stack.insert(0, 1)
-    # u = stack[0]
     diagonals = []
 
     for j in range(2, len(pts) - 1):
@@ -133,46 +153,3 @@ def x_monotone_triangulation(pts: list):
         diagonals.append(LineSegment(pts[u].pt, pts[-1].pt))
         show_polygon_with_diagonals(pts, diagonals, True)
     return diagonals
-    # while len(pts) > 1:
-    #     vi = pts.pop()
-    #     vi_last = stack[-1]
-    #     # case 1: vi and vi-1 on opposite chains:
-    #     if vi.chain != vi_last.chain:
-    #         for idx in range(len(stack)-1, -1, -1):
-    #             if stack[idx] != u:
-    #                 diagonals.append(LineSegment(stack[idx], vi))
-    #         u = vi_last
-    #     # case 2: vi on same chain as vi-1
-    #     else:
-    #         # i.e. vi-1 is a non-reflex vertex
-    #         if not check_vertex_reflexive(vi.pt, vi_last.pt, stack[-2].pt):
-    #             # add diagonals until no more vertices can be seen from vi
-    #             if vi.chain == "lower":
-    #                 visible = True
-    #                 can_continue = True
-    #                 while visible and can_continue:
-    #                     q = stack[-1]
-    #                     r = stack[-2]
-    #                     #Todo fix
-    #                     q_visible = orient_test(vi.pt, q.pt, r.pt) < 0
-    #                     if q_visible:
-    #                         diagonals.append(LineSegment(vi.pt, q.pt))
-    #                         can_continue = orient_test(vi.pt, r.pt, q.pt) > 0
-    #                         stack.pop()
-    #             else:
-    #                 visible = True
-    #                 can_continue = True
-    #                 while visible and can_continue:
-    #                     q = stack[-1]
-    #                     r = stack[-2]
-    #                     #Todo fix
-    #                     q_visible = orient_test(vi.pt, q.pt, r.pt) > 0
-    #                     if q_visible:
-    #                         diagonals.append(LineSegment(vi.pt, q.pt))
-    #                         can_continue = orient_test(vi.pt, r.pt, q.pt) < 0
-    #                         stack.pop()
-    #         # vi-1 is a reflex vertex, so just add vi to the stack
-    #         else:
-    #             stack.append(vi)
-    # return diagonals
-
