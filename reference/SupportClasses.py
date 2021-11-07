@@ -55,7 +55,18 @@ class LineSegment:
         return f"[{self.name}: ({self.pt0}), ({self.pt1})]"
 
     def __eq__(self, e2):
-        return self.pt0 == e2.pt0 and self.pt1 == e2.pt1
+        return self.pt0 == e2.pt0 and self.pt1 == e2.pt1 and self.name == e2.name
+
+class Event:
+    def __init__(self, pt, seg, endpt_type, chain):
+        self.pt = pt
+        self.seg = seg
+        self.endpt_type = endpt_type
+        self.chain = chain
+
+class EndptType(Enum):
+    LEFT = 1,
+    RIGHT = 2
 
 class SubdivEvent(Enum):
     SPLIT=1,

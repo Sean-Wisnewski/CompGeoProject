@@ -1,11 +1,20 @@
 # already has the from SupportClasses import *
 from helpers import *
-from SupportClasses import SubdivEvent
+from SupportClasses import SubdivEvent, Event, EndptType
+from subdiv_helpers import *
+from pytreemap import TreeMap
 
-def make_event_queue(pts_with_info):
-    only_pts = [elem.pt for elem in pts_with_info]
-    only_pts = sorted(only_pts, key=lambda pt: pt.x)
-    return only_pts
+def make_event_queue(pts_with_info, segs):
+    pts_info_dict = {elem.pt : elem.chain for elem in pts_with_info}
+    events = []
+    for seg in segs:
+        chain = pts_info_dict[seg.pt0]
+        events.append(Event(seg.pt0, seg, EndptType.LEFT, chain))
+        chain = pts_info_dict[seg.pt1]
+        events.append(Event(seg.pt1, seg, EndptType.RIGHT, chain))
+    #pts_with_info_sorted = sorted(pts_with_info, key=lambda elem: elem.pt.x)
+    events_sorted = sorted(events, key = lambda elem : elem.pt.x)
+    return events_sorted
 
 def fixup(vertex, seg):
     """
@@ -46,6 +55,7 @@ def determine_event_type(vertex, segs_involved):
     # the vertex is either on the upper or lower chain
     else:
         # not honestly sure how to determine the location of the interior with just a vertex + 2 segs (don't think possible?)
+        # TODO just cheat and use the extra info I have for each event
         return SubdivEvent.UNIMPL
 
 def split_polygon_to_monotone_polygons(events, pts_to_segs_dict):
@@ -63,10 +73,25 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs_dict):
         segs_involved = pts_to_segs_dict[vertex]
         print(determine_event_type(vertex, segs_involved))
 
-pts = (read_input_to_pts_list("inputs/simple_non_monotone.txt"))
-segs, pts_to_segs_dict = segs_from_pts(pts)
-for k, v in pts_to_segs_dict.items():
-    print(v)
-all_pts = split_to_chains(pts, True)
-events = make_event_queue(all_pts)
-split_polygon_to_monotone_polygons(events, pts_to_segs_dict)
+def get_just_segs_from_tm(tm : TreeMap):
+    unclean = list(tm.entry_set())
+    entries = [entry.value.name for entry in unclean]
+    return entries
+
+def tm_from_event_q(events, pts_to_segs, segs):
+    tm = TreeMap(comparator=above_below_comparator)
+    lut = construct_tree_lookup_table(segs)
+    for event in events:
+        print(str(event.pt) + " "  + event.seg.name + " "  + str(event.endpt_type))
+
+
+def build_tree_map(segs : [LineSegment]):
+    tm = TreeMap(comparator=above_below_comparator)
+    lut = construct_tree_lookup_table(segs)
+    for seg in segs:
+        # really need to put in at left endpoints, delete at right endpoints
+        # will need to attach additional info to the events to make this easier to do
+        # this is such a dumb fucking hack
+        tm.put((seg.name, seg.pt0.x, lut) , seg)
+        entries = get_just_segs_from_tm(tm)
+        #print(entries)
