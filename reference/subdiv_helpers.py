@@ -1,4 +1,6 @@
-from SupportClasses import LineSegment, Point
+from SupportClasses import *
+from pytreemap import TreeMap
+from helpers import orient_test
 
 def construct_tree_lookup_table(segs : [LineSegment]):
     lut = {}
@@ -60,3 +62,53 @@ def above_below_comparator(e1 : tuple[str, int, dict[str : LineSegment]], e2 : t
         else:
             # TODO change x values of tuples to be correct
             return above_below_comparator((seg1.name, seg1.pt0.x+EPS, lut), (seg2.name, seg2.pt0.x+EPS, lut))
+
+def add_to_sls(seg : LineSegment, lut, tm : TreeMap):
+    tm.put((seg.name, seg.pt0.x, lut), seg)
+
+def add_to_helpers(seg0, seg1, vertex, helpers, vertex_is_merge=False):
+    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+        if vertex_is_merge:
+            helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.MERGE)
+        else:
+            helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.NOT_MERGE)
+    else:
+        if vertex_is_merge:
+            helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.MERGE)
+        else:
+            helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.NOT_MERGE)
+
+
+####################
+# Helpers for the 6 Cases
+####################
+
+def fixup(vertex, seg, helpers):
+    if seg.name in helpers:
+        entry = helpers[seg.name]
+        if entry.vertex_type == VertexType.MERGE:
+            return LineSegment(vertex, entry.vertex, "ADDED_DIAGONAL")
+    else:
+        return None
+
+def split(vertex, sls, helpers, pts_to_segs):
+    ...
+
+def merge(vertex, sls, helpers, pts_to_segs):
+    ...
+
+def start(vertex, sls, helpers, pts_to_segs, lut):
+    segs_involved = pts_to_segs[vertex]
+    add_to_sls(segs_involved[0], lut, sls)
+    add_to_sls(segs_involved[1], lut, sls)
+    add_to_helpers(segs_involved[0], segs_involved[1], vertex, helpers, vertex_is_merge=False)
+
+def end(vertex, sls, helpers, pts_to_segs):
+    ...
+
+def upper(vertex, sls, helpers, pts_to_segs):
+    ...
+
+def lower(vertex, sls, helpers, pts_to_segs):
+    ...
+

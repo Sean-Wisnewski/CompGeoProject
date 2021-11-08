@@ -67,9 +67,22 @@ class Event:
     def __repr__(self):
         return str(self.pt) + " " + self.seg.name + " " + str(self.endpt_type)
 
+class HelperEntry:
+    def __init__(self, vertex, seg, vertex_type):
+        self.vertex = vertex
+        self.seg = seg
+        self.vertex_type = vertex_type
+
+    def __repr__(self):
+        return f"{self.vertex} {self.seg} {self.vertex_type}"
+
 class EndptType(Enum):
     LEFT = 1,
     RIGHT = 2
+
+class VertexType(Enum):
+    MERGE = 1,
+    NOT_MERGE = 2
 
 class SubdivEvent(Enum):
     SPLIT=1,
