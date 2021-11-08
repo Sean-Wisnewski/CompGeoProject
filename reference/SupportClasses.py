@@ -64,6 +64,9 @@ class Event:
         self.endpt_type = endpt_type
         self.chain = chain
 
+    def __repr__(self):
+        return str(self.pt) + " " + self.seg.name + " " + str(self.endpt_type)
+
 class EndptType(Enum):
     LEFT = 1,
     RIGHT = 2

@@ -14,5 +14,5 @@ for k, v in pts_to_segs_dict.items():
 #    print(f"{k}: {v}")
 all_pts = split_to_chains(pts, True)
 events = make_event_queue(all_pts, segs)
-tm_from_event_q(events, pts_to_segs_dict, segs)
-#split_polygon_to_monotone_polygons(events, pts_to_segs_dict)
+#tm_from_event_q(events, pts_to_segs_dict, segs)
+split_polygon_to_monotone_polygons(events, pts_to_segs_dict, segs)
