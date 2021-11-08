@@ -63,8 +63,11 @@ def above_below_comparator(e1 : tuple[str, int, dict[str : LineSegment]], e2 : t
             # TODO change x values of tuples to be correct
             return above_below_comparator((seg1.name, seg1.pt0.x+EPS, lut), (seg2.name, seg2.pt0.x+EPS, lut))
 
-def add_to_sls(seg : LineSegment, lut, tm : TreeMap):
-    tm.put((seg.name, seg.pt0.x, lut), seg)
+def add_to_sls(seg : LineSegment, lut, sls : TreeMap):
+    sls.put((seg.name, seg.pt0.x, lut), seg)
+
+def del_from_sls(seg : LineSegment, lut, sls : TreeMap):
+    sls.remove((seg.name, seg.pt0.x, lut))
 
 def add_to_helpers(seg0, seg1, vertex, helpers, vertex_is_merge=False):
     if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
@@ -103,8 +106,18 @@ def start(vertex, sls, helpers, pts_to_segs, lut):
     add_to_sls(segs_involved[1], lut, sls)
     add_to_helpers(segs_involved[0], segs_involved[1], vertex, helpers, vertex_is_merge=False)
 
-def end(vertex, sls, helpers, pts_to_segs):
-    ...
+def end(vertex, sls, helpers, pts_to_segs, lut):
+    segs_involved = pts_to_segs[vertex]
+    seg0 = segs_involved[0]
+    seg1 = segs_involved[1]
+    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+        fixup(vertex, seg0, helpers)
+    else:
+        fixup(vertex, seg1, helpers)
+    print(f"delete seg {seg0.name}")
+    del_from_sls(seg0, lut, sls)
+    print(f"delete seg {seg1.name}")
+    del_from_sls(seg1, lut, sls)
 
 def upper(vertex, sls, helpers, pts_to_segs):
     ...

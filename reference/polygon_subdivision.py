@@ -69,6 +69,8 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
     lut = construct_tree_lookup_table(segs)
     helpers = {}
     for event in events:
+        # This will handle the following events:
+        # Start, Split, Upper, Lower
         if event.endpt_type == EndptType.LEFT:
             # TODO insert seg, then handle event
             # Always insert segments with their left endpoints, as we delete them at the right from the tree
@@ -85,11 +87,20 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
                     print(f"{k}: {v}")
                 print()
             #tm.put((event.seg.name, event.seg.pt0.x, lut), event.seg)
+        # This will handle the following events:
+        # End, Merge, Upper, Lower
         else:
             # TODO handle event, then delete segment
             segs_involved = pts_to_segs[event.seg.pt1]
             etype = determine_event_type(event, segs_involved)
             print(f"{event.pt}: {etype}")
+            if etype == SubdivEvent.END:
+                end(event.pt, tm, helpers, pts_to_segs, lut)
+                entries = get_just_segs_from_tm(tm)
+                print(entries)
+                for k, v in helpers.items():
+                    print(f"{k}: {v}")
+                print()
             #tm.remove((event.seg.name, event.seg.pt0.x, lut))
 
 
