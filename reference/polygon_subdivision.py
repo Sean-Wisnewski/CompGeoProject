@@ -81,11 +81,15 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
             print(f"{event.pt}: {etype}")
             if etype == SubdivEvent.START:
                 start(event.pt, tm, helpers, pts_to_segs, lut)
-                entries = get_just_segs_from_tm(tm)
-                print(entries)
-                for k,v in helpers.items():
-                    print(f"{k}: {v}")
-                print()
+            elif etype == SubdivEvent.UPPER:
+                upper(event.pt, tm, helpers, pts_to_segs, lut)
+            elif etype == SubdivEvent.LOWER:
+                lower(event.pt, tm, helpers, pts_to_segs, lut)
+            entries = get_just_segs_from_tm(tm)
+            print(entries)
+            for k,v in helpers.items():
+                print(f"{k}: {v}")
+            print()
             #tm.put((event.seg.name, event.seg.pt0.x, lut), event.seg)
         # This will handle the following events:
         # End, Merge, Upper, Lower
@@ -96,11 +100,15 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
             print(f"{event.pt}: {etype}")
             if etype == SubdivEvent.END:
                 end(event.pt, tm, helpers, pts_to_segs, lut)
-                entries = get_just_segs_from_tm(tm)
-                print(entries)
-                for k, v in helpers.items():
-                    print(f"{k}: {v}")
-                print()
+            elif etype == SubdivEvent.UPPER:
+                upper(event.pt, tm, helpers, pts_to_segs, lut)
+            elif etype == SubdivEvent.LOWER:
+                lower(event.pt, tm, helpers, pts_to_segs, lut)
+            entries = get_just_segs_from_tm(tm)
+            print(entries)
+            for k, v in helpers.items():
+                print(f"{k}: {v}")
+            print()
             #tm.remove((event.seg.name, event.seg.pt0.x, lut))
 
 

@@ -60,7 +60,6 @@ def above_below_comparator(e1 : tuple[str, int, dict[str : LineSegment]], e2 : t
         if seg1 == seg2:
             return 0
         else:
-            # TODO change x values of tuples to be correct
             return above_below_comparator((seg1.name, seg1.pt0.x+EPS, lut), (seg2.name, seg2.pt0.x+EPS, lut))
 
 def add_to_sls(seg : LineSegment, lut, sls : TreeMap):
@@ -69,17 +68,23 @@ def add_to_sls(seg : LineSegment, lut, sls : TreeMap):
 def del_from_sls(seg : LineSegment, lut, sls : TreeMap):
     sls.remove((seg.name, seg.pt0.x, lut))
 
-def add_to_helpers(seg0, seg1, vertex, helpers, vertex_is_merge=False):
-    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+def add_to_helpers(seg0, vertex, helpers, seg1=None, vertex_is_merge=False):
+    if seg1 is not None:
+        if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+            if vertex_is_merge:
+                helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.MERGE)
+            else:
+                helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.NOT_MERGE)
+        else:
+            if vertex_is_merge:
+                helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.MERGE)
+            else:
+                helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.NOT_MERGE)
+    else:
         if vertex_is_merge:
             helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.MERGE)
         else:
             helpers[seg0.name] = HelperEntry(vertex, seg0, VertexType.NOT_MERGE)
-    else:
-        if vertex_is_merge:
-            helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.MERGE)
-        else:
-            helpers[seg1.name] = HelperEntry(vertex, seg1, VertexType.NOT_MERGE)
 
 
 ####################
@@ -104,7 +109,7 @@ def start(vertex, sls, helpers, pts_to_segs, lut):
     segs_involved = pts_to_segs[vertex]
     add_to_sls(segs_involved[0], lut, sls)
     add_to_sls(segs_involved[1], lut, sls)
-    add_to_helpers(segs_involved[0], segs_involved[1], vertex, helpers, vertex_is_merge=False)
+    add_to_helpers(segs_involved[0], vertex, helpers, seg1=segs_involved[1], vertex_is_merge=False)
 
 def end(vertex, sls, helpers, pts_to_segs, lut):
     segs_involved = pts_to_segs[vertex]
@@ -119,9 +124,34 @@ def end(vertex, sls, helpers, pts_to_segs, lut):
     print(f"delete seg {seg1.name}")
     del_from_sls(seg1, lut, sls)
 
-def upper(vertex, sls, helpers, pts_to_segs):
-    ...
+def upper(vertex, sls, helpers, pts_to_segs, lut):
+    segs_involved = pts_to_segs[vertex]
+    seg0 = segs_involved[0]
+    seg1 = segs_involved[1]
+    # means seg0 is the right seg
+    if seg0.pt1 == vertex:
+        # swap seg ordering
+        seg0, seg1 = seg1, seg0
+    fixup(vertex, seg0, helpers)
+    del_from_sls(seg0, lut, sls)
+    add_to_sls(seg1, lut, sls)
+    add_to_helpers(seg1, vertex, helpers)
 
-def lower(vertex, sls, helpers, pts_to_segs):
-    ...
+
+def lower(vertex, sls : TreeMap, helpers, pts_to_segs, lut):
+    segs_involved = pts_to_segs[vertex]
+    seg0 = segs_involved[0]
+    seg1 = segs_involved[1]
+    # TODO check that this is actually correct
+    e = sls.higher_entry((seg0.name, seg0.pt0.x, lut))
+    e = e.value
+    fixup(vertex, e, helpers)
+    # means seg0 is the right seg
+    if seg0.pt1 == vertex:
+        # swap seg ordering
+        seg0, seg1 = seg1, seg0
+    del_from_sls(seg0, lut, sls)
+    add_to_sls(seg1, lut, sls)
+    add_to_helpers(seg1, vertex, helpers)
+
 
