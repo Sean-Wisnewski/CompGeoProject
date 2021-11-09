@@ -11,6 +11,38 @@ def make_event_queue(pts_with_info):
     events_sorted = sorted(events, key = lambda elem : elem.pt.x)
     return events_sorted
 
+def make_diags_dicts(diags):
+    return {diag.pt0 : diag for diag in diags}, {diag.pt1 : diag for diag in diags}
+
+def split_to_polys(pts, diags):
+    # This makes the assumption that pts is specified in CCW order. This is something we should be able to enforce
+    diags_dict1, diags_dict2 = make_diags_dicts(diags)
+    segs = []
+    polys = []
+    # TODO finish the walks of the polygons
+    for idx, pt in enumerate(pts):
+        if pt in diags_dict1:
+            diag = diags_dict1[pt]
+            if pt == diag.pt0:
+                segs.append(LineSegment(pt, diag.pt1))
+            else:
+                segs.append(LineSegment(pt, diag.pt0))
+            polys.append(segs)
+            segs = []
+        # this is a terrible way of doing things, idc
+        elif pt in diags_dict2:
+            diag = diags_dict2[pt]
+            if pt == diag.pt0:
+                segs.append(LineSegment(pt, diag.pt1))
+            else:
+                segs.append(LineSegment(pt, diag.pt0))
+            polys.append(segs)
+            segs = []
+        else:
+        # TODO make sure we don't step off the end
+            segs.append(LineSegment(pt, pts[idx+1]))
+    return polys
+
 def determine_event_type(event : Event, segs_involved):
     """
     Determines which of the 6 cases is occurring at the current vertex encountered
@@ -112,6 +144,7 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
         print()
     for d in diags:
         print(d)
+    return diags
 
 
 def get_just_segs_from_tm(tm : TreeMap):

@@ -42,7 +42,7 @@ class LineSegment:
     """
     Since line segments are undirected, always put the point further to the right as the right endpoint
     """
-    def __init__(self, pt0, pt1, name):
+    def __init__(self, pt0, pt1, name=None):
         if pt0.x < pt1.x:
             self.pt0 = pt0
             self.pt1 = pt1
