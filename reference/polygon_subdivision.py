@@ -78,6 +78,8 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
     tm = TreeMap(comparator=above_below_comparator)
     lut = construct_tree_lookup_table(segs)
     helpers = {}
+    # list of line segments representing the added diagonals
+    diags = []
     for event in events:
         print(event.pt)
         # segments are always inserted at their left endpoints, there is probably a better way to do this but it works for now
@@ -85,22 +87,22 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
         etype = determine_event_type(event, segs_involved)
         if etype == SubdivEvent.START:
             print("start")
-            #start(event.pt, tm, helpers, pts_to_segs, lut)
+            start(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.UPPER:
             print("upper")
-            #upper(event.pt, tm, helpers, pts_to_segs, lut)
+            upper(event.pt, tm, helpers, pts_to_segs, lut, diags)
         elif etype == SubdivEvent.LOWER:
             print("lower")
-            #lower(event.pt, tm, helpers, pts_to_segs, lut)
+            lower(event.pt, tm, helpers, pts_to_segs, lut, diags)
         elif etype == SubdivEvent.END:
             print("end")
-            #end(event.pt, tm, helpers, pts_to_segs, lut)
+            end(event.pt, tm, helpers, pts_to_segs, lut, diags)
         elif etype == SubdivEvent.SPLIT:
             print("split")
-            #split(event.pt, tm, helpers, pts_to_segs, lut)
+            split(event.pt, tm, helpers, pts_to_segs, lut, diags)
         elif etype == SubdivEvent.MERGE:
             print("merge")
-            #merge(event.pt, tm, helpers, pts_to_segs, lut)
+            merge(event.pt, tm, helpers, pts_to_segs, lut, diags)
         else:
             print("This should literally be unreachable code, you done fucked up son")
         entries = get_just_segs_from_tm(tm)
@@ -108,28 +110,11 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
         for k, v in helpers.items():
             print(f"{k}: {v}")
         print()
+    for d in diags:
+        print(d)
 
 
 def get_just_segs_from_tm(tm : TreeMap):
     unclean = list(tm.entry_set())
     entries = [entry.value.name for entry in unclean]
     return entries
-
-def tm_from_event_q(events, pts_to_segs, segs):
-    tm = TreeMap(comparator=above_below_comparator)
-    lut = construct_tree_lookup_table(segs)
-    for event in events:
-        if event.endpt_type == EndptType.LEFT:
-            # TODO insert line segment, then handle the current vertex
-            # Always insert segments with their left endpoints, as we delete them at the right from the tree
-            tm.put((event.seg.name, event.seg.pt0.x, lut), event.seg)
-            entries = get_just_segs_from_tm(tm)
-            print("After insertion")
-            print(entries)
-        else:
-            # TODO delete a line segment
-            tm.remove((event.seg.name, event.seg.pt0.x, lut))
-            entries = get_just_segs_from_tm(tm)
-            print("After deletion")
-            print(entries)
-            pass

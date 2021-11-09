@@ -95,6 +95,7 @@ def get_segs_involved(vertex, pts_to_segs):
 ####################
 
 # TODO make sure all the swaps are actually occurring correctly: if the right endpt is the endpt that is the same, it fails
+# TODO applies to all functions below
 
 def fixup(vertex, seg, helpers):
     if seg.name in helpers:
@@ -104,26 +105,27 @@ def fixup(vertex, seg, helpers):
     else:
         return None
 
-# TODO split, upper, lower all need to know which segment is being dealt with, need to attach extra info
-def split(vertex, sls, helpers, pts_to_segs, lut):
+def split(vertex, sls, helpers, pts_to_segs, lut, diags):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
     # we want to search from the top edge for this vertex, so swap if needed
     # ensure seg0 is the top seg
+    # TODO check correct (i.e. no collinear points)
     if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) > 0:
         seg0, seg1 = seg1, seg0
     e = sls.higher_entry((seg0.name, seg0.pt0.x, lut))
     e = e.value
     new_diag = LineSegment(vertex, helpers[e.name].vertex, "ADDED_DIAGONAL")
+    diags.append(new_diag)
     add_to_sls(seg0, lut, sls)
     add_to_sls(seg1, lut, sls)
     add_to_helpers(seg0, vertex, helpers)
     add_to_helpers(seg1, vertex, helpers)
-    return new_diag
 
 
-def merge(vertex, sls : TreeMap, helpers, pts_to_segs, lut):
+def merge(vertex, sls : TreeMap, helpers, pts_to_segs, lut, diags):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
     # ensure seg0 is the top seg
+    # TODO check pts being compared correct (no collinear)
     if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) > 0:
         seg0, seg1 = seg1, seg0
     del_from_sls(seg0, lut, sls)
@@ -131,8 +133,12 @@ def merge(vertex, sls : TreeMap, helpers, pts_to_segs, lut):
     # swap earlier ensures seg0 is the top seg
     e = sls.higher_entry((seg0.name, seg0.pt0.x, lut))
     e = e.value
-    fixup(vertex, e, helpers)
-    fixup(vertex, seg1, helpers)
+    d1 = fixup(vertex, e, helpers)
+    if d1 is not None:
+        diags.append(d1)
+    d2 = fixup(vertex, seg1, helpers)
+    if d2 is not None:
+        diags.append(d2)
     add_to_helpers(e, vertex, helpers, vertex_is_merge=True)
 
 
@@ -140,42 +146,56 @@ def start(vertex, sls, helpers, pts_to_segs, lut):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
     add_to_sls(seg0, lut, sls)
     add_to_sls(seg1, lut, sls)
+    # TODO check pts being compared correct (no collinear)
     if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
         add_to_helpers(seg0, vertex, helpers, vertex_is_merge=False)
     else:
         add_to_helpers(seg1, vertex, helpers, vertex_is_merge=False)
 
-def end(vertex, sls, helpers, pts_to_segs, lut):
+def end(vertex, sls, helpers, pts_to_segs, lut, diags):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
-    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
-        fixup(vertex, seg0, helpers)
+    if seg0.pt0 == seg1.pt0:
+        if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+            d1 = fixup(vertex, seg0, helpers)
+        else:
+            d1 = fixup(vertex, seg1, helpers)
     else:
-        fixup(vertex, seg1, helpers)
+        if orient_test(seg0.pt1, seg0.pt0, seg1.pt0) < 0:
+            d1 = fixup(vertex, seg0, helpers)
+        else:
+            d1 = fixup(vertex, seg1, helpers)
+    if d1 is not None:
+        diags.append(d1)
     del_from_sls(seg0, lut, sls)
     del_from_sls(seg1, lut, sls)
 
-def upper(vertex, sls, helpers, pts_to_segs, lut):
+def upper(vertex, sls, helpers, pts_to_segs, lut, diags):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
     # means seg0 is the right seg
+    # TODO check swap is correct
     if seg0.pt1 == vertex:
         # swap seg ordering
         seg0, seg1 = seg1, seg0
-    fixup(vertex, seg0, helpers)
+    d1 = fixup(vertex, seg0, helpers)
+    if d1 is not None:
+        diags.append(d1)
     del_from_sls(seg0, lut, sls)
     add_to_sls(seg1, lut, sls)
     add_to_helpers(seg1, vertex, helpers)
 
 
-def lower(vertex, sls : TreeMap, helpers, pts_to_segs, lut):
+def lower(vertex, sls : TreeMap, helpers, pts_to_segs, lut, diags):
     seg0, seg1 = get_segs_involved(vertex, pts_to_segs)
     # means seg0 is the right seg
-    if seg0.pt1 == vertex:
+    if seg1.pt1 == vertex:
         # swap seg ordering
         seg0, seg1 = seg1, seg0
     # the above swap ensures that seg0 will be the seg to v's left. This is what we use as the key to search in the sls
     e = sls.higher_entry((seg0.name, seg0.pt0.x, lut))
     e = e.value
-    fixup(vertex, e, helpers)
+    d1 = fixup(vertex, e, helpers)
+    if d1 is not None:
+        diags.append(d1)
     # means seg0 is the right seg
     if seg0.pt1 == vertex:
         # swap seg ordering
