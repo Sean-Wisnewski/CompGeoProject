@@ -58,10 +58,8 @@ class LineSegment:
         return self.pt0 == e2.pt0 and self.pt1 == e2.pt1 and self.name == e2.name
 
 class Event:
-    def __init__(self, pt, seg, endpt_type, chain):
+    def __init__(self, pt, chain):
         self.pt = pt
-        self.seg = seg
-        self.endpt_type = endpt_type
         self.chain = chain
 
     def __repr__(self):

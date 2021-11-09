@@ -9,5 +9,5 @@ for k, v in pts_to_segs_dict.items():
     print(v)
 #show_polygon(pts)
 all_pts = split_to_chains(pts, True)
-events = make_event_queue(all_pts, segs)
+events = make_event_queue(all_pts)
 split_polygon_to_monotone_polygons(events, pts_to_segs_dict, segs)

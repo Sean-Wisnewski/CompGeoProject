@@ -4,15 +4,10 @@ from SupportClasses import SubdivEvent, Event, EndptType
 from subdiv_helpers import *
 from pytreemap import TreeMap
 
-def make_event_queue(pts_with_info, segs):
-    pts_info_dict = {elem.pt : elem.chain for elem in pts_with_info}
+def make_event_queue(pts_with_info):
     events = []
-    for seg in segs:
-        chain = pts_info_dict[seg.pt0]
-        events.append(Event(seg.pt0, seg, EndptType.LEFT, chain))
-        chain = pts_info_dict[seg.pt1]
-        events.append(Event(seg.pt1, seg, EndptType.RIGHT, chain))
-    #pts_with_info_sorted = sorted(pts_with_info, key=lambda elem: elem.pt.x)
+    for entry in pts_with_info:
+        events.append(Event(entry.pt, entry.chain))
     events_sorted = sorted(events, key = lambda elem : elem.pt.x)
     return events_sorted
 
@@ -69,47 +64,28 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
     lut = construct_tree_lookup_table(segs)
     helpers = {}
     for event in events:
-        # This will handle the following events:
-        # Start, Split, Upper, Lower
-        if event.endpt_type == EndptType.LEFT:
-            # TODO insert seg, then handle event
-            # Always insert segments with their left endpoints, as we delete them at the right from the tree
-            # also, since line segments only intersect at their right endpoints, we know that they won't swap order in
-            # the tree once they are inserted.
-            segs_involved = pts_to_segs[event.seg.pt0]
-            etype = determine_event_type(event, segs_involved)
-            print(f"{event.pt}: {etype}")
-            if etype == SubdivEvent.START:
-                start(event.pt, tm, helpers, pts_to_segs, lut)
-            elif etype == SubdivEvent.UPPER:
-                upper(event.pt, tm, helpers, pts_to_segs, lut)
-            elif etype == SubdivEvent.LOWER:
-                lower(event.pt, tm, helpers, pts_to_segs, lut)
-            entries = get_just_segs_from_tm(tm)
-            print(entries)
-            for k,v in helpers.items():
-                print(f"{k}: {v}")
-            print()
-            #tm.put((event.seg.name, event.seg.pt0.x, lut), event.seg)
-        # This will handle the following events:
-        # End, Merge, Upper, Lower
-        else:
-            # TODO handle event, then delete segment
-            segs_involved = pts_to_segs[event.seg.pt1]
-            etype = determine_event_type(event, segs_involved)
-            print(f"{event.pt}: {etype}")
-            if etype == SubdivEvent.END:
-                end(event.pt, tm, helpers, pts_to_segs, lut)
-            elif etype == SubdivEvent.UPPER:
-                upper(event.pt, tm, helpers, pts_to_segs, lut)
-            elif etype == SubdivEvent.LOWER:
-                lower(event.pt, tm, helpers, pts_to_segs, lut)
-            entries = get_just_segs_from_tm(tm)
-            print(entries)
-            for k, v in helpers.items():
-                print(f"{k}: {v}")
-            print()
-            #tm.remove((event.seg.name, event.seg.pt0.x, lut))
+        # Always insert segments with their left endpoints, as we delete them at the right from the tree
+        # also, since line segments only intersect at their right endpoints, we know that they won't swap order in
+        # the tree once they are inserted.
+        segs_involved = get_segs_involved(event.pt, pts_to_segs)
+        etype = determine_event_type(event, segs_involved)
+        if etype == SubdivEvent.START:
+            start(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.UPPER:
+            upper(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.LOWER:
+            lower(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.END:
+            end(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.UPPER:
+            upper(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.LOWER:
+            lower(event.pt, tm, helpers, pts_to_segs, lut)
+        entries = get_just_segs_from_tm(tm)
+        print(entries)
+        for k, v in helpers.items():
+            print(f"{k}: {v}")
+        print()
 
 
 def get_just_segs_from_tm(tm : TreeMap):
