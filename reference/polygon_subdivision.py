@@ -18,6 +18,7 @@ def determine_event_type(event : Event, segs_involved):
     :param segs_involved:
     :return:
     """
+    # TODO fix this shit: not always giving the right type of event, specifically for start/split/merge/end due to incorrect angles
     # out of I'm lazy, just give direct named access to important points
     # NOTE: I've defined line segments to *always* have the right endpoint be the pt with a larger x value
     left_seg0 = segs_involved[0].pt0
@@ -28,17 +29,15 @@ def determine_event_type(event : Event, segs_involved):
 
     # either a split vertex or a start vertex
     if event_pt == left_seg0 and event_pt == left_seg1:
-        # TODO changing the angle to be [0, 2pi] is causing issues: negative angles become too large
-        int_angle = compute_interior_angle(event_pt, right_seg1, right_seg0, False)
+        int_angle = compute_interior_angle(event_pt, right_seg0, right_seg1, False)
         if math.pi <= int_angle:
             return SubdivEvent.SPLIT
         else:
             return SubdivEvent.START
     # merge or end vertex
     elif event_pt == right_seg0 and event_pt == right_seg1:
-        # I have no idea why, but this has to be the order for things to work
-        # I could figure out why but I'm lazy
-        int_angle = compute_interior_angle(event_pt, left_seg1, left_seg0, False)
+        # TODO make sure seg1 is actually on the bottom or this is wrong
+        int_angle = compute_interior_angle(event_pt, left_seg0, left_seg1, False)
         if math.pi <= int_angle:
             return SubdivEvent.MERGE
         else:
@@ -70,17 +69,25 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
         segs_involved = get_segs_involved(event.pt, pts_to_segs)
         etype = determine_event_type(event, segs_involved)
         if etype == SubdivEvent.START:
+            print("start")
             start(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.UPPER:
+            print("upper")
             upper(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.LOWER:
+            print("lower")
             lower(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.END:
+            print("end")
             end(event.pt, tm, helpers, pts_to_segs, lut)
-        elif etype == SubdivEvent.UPPER:
-            upper(event.pt, tm, helpers, pts_to_segs, lut)
-        elif etype == SubdivEvent.LOWER:
-            lower(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.SPLIT:
+            print("split")
+            split(event.pt, tm, helpers, pts_to_segs, lut)
+        elif etype == SubdivEvent.MERGE:
+            print("merge")
+            merge(event.pt, tm, helpers, pts_to_segs, lut)
+        else:
+            print("This should literally be unreachable code, you done fucked up son")
         entries = get_just_segs_from_tm(tm)
         print(entries)
         for k, v in helpers.items():

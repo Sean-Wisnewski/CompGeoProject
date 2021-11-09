@@ -63,7 +63,7 @@ class Event:
         self.chain = chain
 
     def __repr__(self):
-        return str(self.pt) + " " + self.seg.name + " " + str(self.endpt_type)
+        return str(self.pt) + " "  + str(self.chain)
 
 class HelperEntry:
     def __init__(self, vertex, seg, vertex_type):

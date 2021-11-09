@@ -109,7 +109,9 @@ def split(vertex, sls, helpers, pts_to_segs, lut):
     # ensure seg0 is the top seg
     if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) > 0:
         seg0, seg1 = seg1, seg0
-    new_diag = LineSegment(vertex, helpers[seg0.name], "ADDED_DIAGONAL")
+    e = sls.higher_entry((seg0.name, seg0.pt0.x, lut))
+    e = e.value
+    new_diag = LineSegment(vertex, helpers[e.name].vertex, "ADDED_DIAGONAL")
     add_to_sls(seg0, lut, sls)
     add_to_sls(seg1, lut, sls)
     add_to_helpers(seg0, vertex, helpers)
