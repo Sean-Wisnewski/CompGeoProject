@@ -99,11 +99,38 @@ def fixup(vertex, seg, helpers):
     else:
         return None
 
-def split(vertex, sls, helpers, pts_to_segs):
-    ...
+# TODO split, upper, lower all need to know which segment is being dealt with, need to attach extra info
+def split(vertex, sls, helpers, pts_to_segs, lut):
+    segs_involved = pts_to_segs[vertex]
+    seg0 = segs_involved[0]
+    seg1 = segs_involved[1]
+    # TODO for now just assume seg0 to get structure in place
+    new_diag = LineSegment(vertex, helpers[seg0.name], "ADDED_DIAGONAL")
+    add_to_sls(seg0, lut, sls)
+    add_to_sls(seg1, lut, sls)
+    fixup(vertex, seg0, helpers)
+    fixup(vertex, seg0, helpers)
+    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+        add_to_helpers(seg0, vertex, helpers)
+    else:
+        add_to_helpers(seg1, vertex, helpers)
+    return new_diag
 
-def merge(vertex, sls, helpers, pts_to_segs):
-    ...
+
+def merge(vertex, sls : TreeMap, helpers, pts_to_segs, lut):
+    # TODO I'm being lazy since we already have the lines, just know them without looking them up in the SLS
+    segs_involved = pts_to_segs[vertex]
+    seg0 = segs_involved[0]
+    seg1 = segs_involved[1]
+    # TODO swap ordering from lut, sls to sls, lut (idk why I did it this way originally but I'm lazy)
+    del_from_sls(seg0, lut, sls)
+    del_from_sls(seg1, lut, sls)
+    # means seg0 is the lower of the two edges
+    if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) < 0:
+        add_to_helpers(seg0, vertex, helpers, vertex_is_merge=True)
+    else:
+        add_to_helpers(seg1, vertex, helpers, vertex_is_merge=True)
+
 
 def start(vertex, sls, helpers, pts_to_segs, lut):
     segs_involved = pts_to_segs[vertex]
