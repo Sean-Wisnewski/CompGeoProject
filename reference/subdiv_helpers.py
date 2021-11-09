@@ -94,6 +94,8 @@ def get_segs_involved(vertex, pts_to_segs):
 # Helpers for the 6 Cases
 ####################
 
+# TODO make sure all the swaps are actually occurring correctly: if the right endpt is the endpt that is the same, it fails
+
 def fixup(vertex, seg, helpers):
     if seg.name in helpers:
         entry = helpers[seg.name]

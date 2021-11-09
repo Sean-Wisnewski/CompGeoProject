@@ -14,6 +14,9 @@ def make_event_queue(pts_with_info):
 def determine_event_type(event : Event, segs_involved):
     """
     Determines which of the 6 cases is occurring at the current vertex encountered
+    Needs confirmation:
+    - If upper chain, poly interior is below top seg
+    - If lower chain, poly interior is above top seg
     :param event:
     :param segs_involved:
     :return:
@@ -21,23 +24,36 @@ def determine_event_type(event : Event, segs_involved):
     # TODO fix this shit: not always giving the right type of event, specifically for start/split/merge/end due to incorrect angles
     # out of I'm lazy, just give direct named access to important points
     # NOTE: I've defined line segments to *always* have the right endpoint be the pt with a larger x value
-    left_seg0 = segs_involved[0].pt0
-    right_seg0 = segs_involved[0].pt1
-    left_seg1 = segs_involved[1].pt0
-    right_seg1 = segs_involved[1].pt1
+    seg0, seg1 = segs_involved[0], segs_involved[1]
+    # this happens too early: if right endpt is the same, it doesn't work
+    if seg0.pt0 == seg1.pt0:
+        if orient_test(seg0.pt1, seg0.pt0, seg1.pt1) > 0:
+            seg0, seg1 = seg1, seg0
+    else:
+        if orient_test(seg0.pt0, seg0.pt1, seg1.pt0) > 0:
+            seg0, seg1 = seg1, seg0
+    left_seg0 = seg0.pt0
+    right_seg0 = seg0.pt1
+    left_seg1 = seg1.pt0
+    right_seg1 = seg1.pt1
     event_pt = event.pt
 
     # either a split vertex or a start vertex
     if event_pt == left_seg0 and event_pt == left_seg1:
-        int_angle = compute_interior_angle(event_pt, right_seg0, right_seg1, False)
+        if event.chain == "upper":
+            int_angle = compute_interior_angle(event_pt, right_seg0, right_seg1, False)
+        else:
+            int_angle = compute_interior_angle(event_pt, right_seg1, right_seg0, False)
         if math.pi <= int_angle:
             return SubdivEvent.SPLIT
         else:
             return SubdivEvent.START
     # merge or end vertex
     elif event_pt == right_seg0 and event_pt == right_seg1:
-        # TODO make sure seg1 is actually on the bottom or this is wrong
-        int_angle = compute_interior_angle(event_pt, left_seg0, left_seg1, False)
+        if event.chain == "upper":
+            int_angle = compute_interior_angle(event_pt, left_seg1, left_seg0, False)
+        else:
+            int_angle = compute_interior_angle(event_pt, left_seg0, left_seg1, False)
         if math.pi <= int_angle:
             return SubdivEvent.MERGE
         else:
@@ -63,29 +79,28 @@ def split_polygon_to_monotone_polygons(events, pts_to_segs, segs):
     lut = construct_tree_lookup_table(segs)
     helpers = {}
     for event in events:
-        # Always insert segments with their left endpoints, as we delete them at the right from the tree
-        # also, since line segments only intersect at their right endpoints, we know that they won't swap order in
-        # the tree once they are inserted.
+        print(event.pt)
+        # segments are always inserted at their left endpoints, there is probably a better way to do this but it works for now
         segs_involved = get_segs_involved(event.pt, pts_to_segs)
         etype = determine_event_type(event, segs_involved)
         if etype == SubdivEvent.START:
             print("start")
-            start(event.pt, tm, helpers, pts_to_segs, lut)
+            #start(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.UPPER:
             print("upper")
-            upper(event.pt, tm, helpers, pts_to_segs, lut)
+            #upper(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.LOWER:
             print("lower")
-            lower(event.pt, tm, helpers, pts_to_segs, lut)
+            #lower(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.END:
             print("end")
-            end(event.pt, tm, helpers, pts_to_segs, lut)
+            #end(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.SPLIT:
             print("split")
-            split(event.pt, tm, helpers, pts_to_segs, lut)
+            #split(event.pt, tm, helpers, pts_to_segs, lut)
         elif etype == SubdivEvent.MERGE:
             print("merge")
-            merge(event.pt, tm, helpers, pts_to_segs, lut)
+            #merge(event.pt, tm, helpers, pts_to_segs, lut)
         else:
             print("This should literally be unreachable code, you done fucked up son")
         entries = get_just_segs_from_tm(tm)
