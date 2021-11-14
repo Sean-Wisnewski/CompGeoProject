@@ -14,33 +14,64 @@ def make_event_queue(pts_with_info):
 def make_diags_dicts(diags):
     return {diag.pt0 : diag for diag in diags}, {diag.pt1 : diag for diag in diags}
 
-def split_to_polys(pts, diags):
-    # This makes the assumption that pts is specified in CCW order. This is something we should be able to enforce
+def check_seg_on_diag(seg, diag):
+    seg_pts = [seg.pt0, seg.pt1]
+    diag_pts = [diag.pt0, diag.pt1]
+    return any(pt in seg_pts for pt in diag_pts)
+
+def split_to_polys(pts, diags, pts_to_segs):
     diags_dict1, diags_dict2 = make_diags_dicts(diags)
     segs = []
     polys = []
-    # TODO finish the walks of the polygons
-    for idx, pt in enumerate(pts):
-        if pt in diags_dict1:
-            diag = diags_dict1[pt]
-            if pt == diag.pt0:
-                segs.append(LineSegment(pt, diag.pt1))
+    poly_pts = []
+    all_poly_pts = []
+    for diag in diags:
+        segs.append(diag)
+        start_idx = pts.index(diag.pt0)
+        end_idx = pts.index(diag.pt1)
+        idx = start_idx
+        while idx != end_idx:
+            if idx == len(pts)-1:
+                next_idx = 0
             else:
-                segs.append(LineSegment(pt, diag.pt0))
-            polys.append(segs)
-            segs = []
-        # this is a terrible way of doing things, idc
-        elif pt in diags_dict2:
-            diag = diags_dict2[pt]
-            if pt == diag.pt0:
-                segs.append(LineSegment(pt, diag.pt1))
+                next_idx = idx+1
+            if pts[idx] in diags_dict1:
+                seg = diags_dict1[pts[idx]]
             else:
-                segs.append(LineSegment(pt, diag.pt0))
-            polys.append(segs)
-            segs = []
-        else:
-        # TODO make sure we don't step off the end
-            segs.append(LineSegment(pt, pts[idx+1]))
+                seg = LineSegment(pts[idx], pts[next_idx])
+            poly_pts.append(pts[idx])
+            poly_pts.append(pts[next_idx])
+            segs.append(seg)
+            idx += 1
+            if idx >= len(pts)-1:
+                idx = 0
+        polys.append(segs)
+        all_poly_pts.append(poly_pts)
+        segs = []
+        poly_pts = []
+
+        idx = end_idx
+        segs.append(diag)
+        while idx != start_idx:
+            if idx == len(pts) - 1:
+                next_idx = 0
+            else:
+                next_idx = idx + 1
+            if pts[idx] in diags_dict1:
+                seg = diags_dict1[pts[idx]]
+            else:
+                seg = LineSegment(pts[idx], pts[next_idx])
+            poly_pts.append(pts[idx])
+            poly_pts.append(pts[next_idx])
+            segs.append(seg)
+            idx += 1
+            if idx >= len(pts):
+                idx = 0
+        polys.append(segs)
+        all_poly_pts.append(poly_pts)
+        segs = []
+        poly_pts = []
+
     return polys
 
 def determine_event_type(event : Event, segs_involved):
