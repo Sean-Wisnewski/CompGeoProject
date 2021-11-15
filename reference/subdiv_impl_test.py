@@ -3,7 +3,9 @@ from SupportClasses import *
 from subdiv_helpers import construct_tree_lookup_table
 from visualizations import show_polygon, show_polygon_with_diagonals
 
-pts = (read_input_to_pts_list("../inputs/one_merge_vertex.txt"))
+#pts = (read_input_to_pts_list("../inputs/one_merge_vertex.txt"))
+#pts = (read_input_to_pts_list("../inputs/one_split_vertex.txt"))
+pts = (read_input_to_pts_list("../inputs/test.txt"))
 #pts = (read_input_to_pts_list("../inputs/simple_non_monotone.txt"))
 #show_polygon(pts)
 segs, pts_to_segs_dict = segs_from_pts(pts)
@@ -15,7 +17,9 @@ events = make_event_queue(all_pts)
 for e in events:
     print(e)
 diags = split_polygon_to_monotone_polygons(events, pts_to_segs_dict, segs)
-polys = split_to_polys(pts, diags, pts_to_segs_dict)
+print()
+#polys = split_to_polys(pts, diags, pts_to_segs_dict)
+polys = make_polys(pts, diags)
 for poly in polys:
     poly_pts = []
     for seg in poly:

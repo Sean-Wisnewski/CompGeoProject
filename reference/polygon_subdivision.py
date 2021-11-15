@@ -19,6 +19,95 @@ def check_seg_on_diag(seg, diag):
     diag_pts = [diag.pt0, diag.pt1]
     return any(pt in seg_pts for pt in diag_pts)
 
+def make_polys(pts, diags):
+    diags_dict1, diags_dict2 = make_diags_dicts(diags)
+    segs = []
+    polys = []
+    poly_pts = []
+    all_poly_pts = []
+    for idx, pt in enumerate(pts):
+        print(idx)
+        if idx < len(pts)-1:
+            next_pt = pts[idx+1]
+            seg = LineSegment(pt, next_pt)
+            segs.append(seg)
+            poly_pts.append(seg.pt0)
+            poly_pts.append(seg.pt1)
+            if next_pt in diags_dict1:
+                diag = diags_dict1[next_pt]
+            elif next_pt in diags_dict2:
+                diag = diags_dict2[next_pt]
+            else:
+                diag = None
+            if diag is not None:
+                segs.append(diag)
+                if next_pt == diag.pt0:
+                    next_idx = pts.index(diag.pt1)
+                else:
+                    next_idx = pts.index(diag.pt0)
+                seen_known = False
+                while not seen_known:
+                    # TODO handle out of bounds
+                    startpt = pts[next_idx]
+                    if next_idx+1 >= len(pts):
+                        endpt = pts[0]
+                    else:
+                        endpt = pts[next_idx+1]
+                    new_seg = LineSegment(startpt, endpt)
+                    segs.append(new_seg)
+                    if startpt in poly_pts:
+                        polys.append(segs)
+                        all_poly_pts.append(poly_pts)
+                        segs = []
+                        #seg = LineSegment(pt, next_pt)
+                        #segs.append(seg)
+                        poly_pts = []
+                        seen_known = True
+                    else:
+                        poly_pts.append(new_seg.pt0)
+                        poly_pts.append(new_seg.pt1)
+        else:
+            next_pt = pts[0]
+            seg = LineSegment(pts[idx], pts[0])
+            segs.append(seg)
+            poly_pts.append(seg.pt0)
+            poly_pts.append(seg.pt1)
+            if next_pt in diags_dict1:
+                diag = diags_dict1[next_pt]
+            elif next_pt in diags_dict2:
+                diag = diags_dict2[next_pt]
+            else:
+                diag = None
+            if diag is not None:
+                segs.append(diag)
+                if next_pt == diag.pt0:
+                    next_idx = pts.index(diag.pt1)
+                else:
+                    next_idx = pts.index(diag.pt0)
+                seen_known = False
+                while not seen_known:
+                    # TODO handle out of bounds
+                    startpt = pts[next_idx]
+                    if next_idx+1 >= len(pts):
+                        endpt = pts[0]
+                    else:
+                        endpt = pts[next_idx+1]
+                    new_seg = LineSegment(startpt, endpt)
+                    segs.append(new_seg)
+                    if startpt in poly_pts:
+                        polys.append(segs)
+                        all_poly_pts.append(poly_pts)
+                        segs = []
+                        #seg = LineSegment(pt, next_pt)
+                        #segs.append(seg)
+                        poly_pts = []
+                        seen_known = True
+                    else:
+                        poly_pts.append(new_seg.pt0)
+                        poly_pts.append(new_seg.pt1)
+    return polys
+
+
 def split_to_polys(pts, diags, pts_to_segs):
     diags_dict1, diags_dict2 = make_diags_dicts(diags)
     segs = []
