@@ -1,24 +1,28 @@
-import logo from './logo.svg';
+import { useCanvas } from './hooks/useCanvas';
 import './App.css';
 
 function App() {
+    const [ coordinates, setCoordinates, canvasRef, canvasWidth, canvasHeight ] = useCanvas();
+
+    const handleCanvasClick=(event)=>{
+        // on each click get current mouse location
+        const currentCoord = { x: event.clientX, y: event.clientY };
+        // add the newest mouse location to an array in state
+        setCoordinates([...coordinates, currentCoord]);
+    };
+
+    const handleClearCanvas=(event)=>{
+        setCoordinates([]);
+    };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="App">
+        <canvas
+            className="App-canvas"
+            ref={canvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+            onClick={handleCanvasClick} />
+    </main>
   );
 }
 
