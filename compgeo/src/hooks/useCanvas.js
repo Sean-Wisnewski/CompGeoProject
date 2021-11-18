@@ -14,13 +14,23 @@ export const canvasHeight = window.innerHeight * WINDOW_FRACTION;
 export function draw(ctx, location){
     console.log("attempting to draw")
     ctx.fillStyle = 'black';
-    ctx.shadowColor = 'blue';
-    ctx.shadowBlur = 15;
     ctx.save();
     ctx.scale(SCALE, SCALE);
     ctx.translate(((location.x - (window.innerWidth * (1.0 - WINDOW_FRACTION)/2)) / SCALE), (location.y/ SCALE) - Y_OFFSET * 100);
     ctx.rotate(225 * Math.PI / 180);
     ctx.fill(SVG_PATH);
+    // .restore(): Canvas 2D API restores the most recently saved canvas state
+    ctx.restore();
+};
+
+export function drawline(ctx, start, end){
+    console.log("attempting to draw")
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.strokeStyle = "black";
+    ctx.stroke();
     // .restore(): Canvas 2D API restores the most recently saved canvas state
     ctx.restore();
 };
@@ -37,6 +47,12 @@ export function useCanvas(){
 
         // draw all coordinates held in state
         coordinates.forEach((coordinate)=>{draw(ctx, coordinate)});
+        if (coordinates.length > 1) {
+            for (let i = 0; i < coordinates.length - 1; i++) {
+                drawline(ctx, coordinates[i], coordinates[i + 1]);
+            }
+            drawline(ctx, coordinates[coordinates.length - 1], coordinates[0]);
+        }
     });
 
     return [ coordinates, setCoordinates, canvasRef, canvasWidth, canvasHeight ];
