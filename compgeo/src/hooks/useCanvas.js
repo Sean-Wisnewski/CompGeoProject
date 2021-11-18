@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {splitPoints} from "../monotoneTriangulation";
 
 // Path2D for a Heart SVG
 const heartSVG = "M1045 2224 c-291 -34 -488 -122 -678 -303 -442 -422 -459 -1112 -38 -1554 438 -459 1160 -457 1596 4 326 344 394 864 168 1279 -113 208 -307 386 -521 481 -165 72 -379 110 -527 93z\""
@@ -23,13 +24,13 @@ export function draw(ctx, location){
     ctx.restore();
 };
 
-export function drawline(ctx, start, end){
+export function drawline(ctx, start, end, color="black"){
     console.log("attempting to draw")
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
     ctx.lineTo(end.x, end.y);
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = color;
     ctx.stroke();
     // .restore(): Canvas 2D API restores the most recently saved canvas state
     ctx.restore();
@@ -52,6 +53,21 @@ export function useCanvas(){
                 drawline(ctx, coordinates[i], coordinates[i + 1]);
             }
             drawline(ctx, coordinates[coordinates.length - 1], coordinates[0]);
+        }
+
+        var [bot_points, top_points] = splitPoints(coordinates);
+        if (top_points.length > 1) {
+            for (let i = 0; i < top_points.length - 1; i++) {
+                drawline(ctx, top_points[i], top_points[i + 1], "red");
+            }
+            drawline(ctx, top_points[top_points.length - 1], top_points[0], "red");
+        }
+        if (bot_points.length > 1) {
+            for (let i = 0; i < bot_points.length - 1; i++) {
+                drawline(ctx, bot_points[i], bot_points[i + 1], "blue");
+            }
+            console.log(bot_points)
+            drawline(ctx, bot_points[bot_points.length - 1], bot_points[0],"blue");
         }
     });
 
