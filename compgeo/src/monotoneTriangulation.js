@@ -6,6 +6,18 @@ class StackElement {
         this.chain = chain;
     }
 }
+class LineSegment {
+    constructor(pt0, pt1, name) {
+        if (pt0.x < pt1.x){
+            this.pt0 = pt0;
+            this.pt1 = pt1;
+        }else{
+            this.pt0 = pt1;
+            this.pt1 = pt0;
+        }
+        this.name = name;
+    }
+}
 
 function split_to_chains(pts){
     let pt_min = pts[0];
@@ -81,42 +93,54 @@ export function splitPoints(polygon){
     return [bot_points, top_points];
 }
 
-function x_monotone_triangulation(stackElements){
+function visible(pts, j, u) {
+    for (let i=u+1; i < j; i++) {
+        if (pts[i].chain === "lower" && orient_test(pts[j].pt, pts[i].pt, pts[u].pt) >= 0) {
+            return false
+        } else if (pts[i].chain === "upper" && orient_test(pts[j].pt, pts[i].pt, pts[u].pt) <= 0) {
+            return false;
+        }
+    }
+    return (j - (1 + u)) > 0
+}
+
+function x_monotone_triangulation(pts){
     let stack = new Stack();
     stack.push(0);
     stack.push(1);
     let diagonals = [];
-    for (let j=2; j < stackElements.length - 1; j++) {
-        if (stackElements[stack.peek()].chain !== stackElements[j].chain){
+
+    for (let j=2; j < pts.length - 1; j++) {
+        if (pts[stack.peek()].chain !== pts[j].chain){
             while (stack.size() > 1) {
                 let u = stack.pop();
-                diagonals.append(LineSegment(stackElements[u].pt, stackElements[j].pt))
-                show_polygon_with_diagonals(stackElements, diagonals, true)
+                diagonals.push(new LineSegment(pts[u].pt, pts[j].pt))
+                // show_polygon_with_diagonals(stackElements, diagonals, true)
             }
-            stack.pop()
+            stack = new Stack();
             stack.push(j - 1)
             stack.push(j)
-        }
-        else {
-            var u = stack.pop(0);
-            var u_l = u;
-            while (stack && visible(stackElements, j, u) ) {
-                diagonals.append(LineSegment(stackElements[u].pt, stackElements[j].pt))
-                show_polygon_with_diagonals(stackElements, diagonals, true)
-                if stack:
-                u = stack.pop(0)
+        } else {
+            let u = stack.pop();
+            let u_l = u;
+            while ((!stack.isEmpty()) && visible(pts, j, u) ) {
+                diagonals.push(new LineSegment(pts[u].pt, pts[j].pt))
+                // show_polygon_with_diagonals(stackElements, diagonals, true)
+                if (!stack.isEmpty()) {
+                    u = stack.pop()
+                }
             }
             stack.push(u_l)
             stack.push(j)
         }
     }
-    for (u in stack[1:-1]){
-        diagonals.append(LineSegment(stackElements[u].pt, stackElements[-1].pt))
-        show_polygon_with_diagonals(stackElements, diagonals, true)
+    stack.pop()
+    while (stack.size() > 1) {
+        let u = stack.pop()
+        diagonals.push(new LineSegment(pts[u].pt, pts[pts.length-1].pt))
+        // show_polygon_with_diagonals(stackElements, diagonals, true)
     }
     return diagonals
-
-    return [];
 }
 
 export function getDiagonals(polygon){
