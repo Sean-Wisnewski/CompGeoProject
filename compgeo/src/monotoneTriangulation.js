@@ -19,7 +19,7 @@ class LineSegment {
     }
 }
 
-function split_to_chains(pts){
+export function split_to_chains(pts){
     let pt_min = pts[0];
     let pt_max = pts[0];
     let min_index = 0;
@@ -34,20 +34,20 @@ function split_to_chains(pts){
             max_index = i;
         }
     }
-    const comparator = (pt1, pt2) => pt1.x < pt2.x;
+    const comparator = (pt1, pt2) => pt1.x - pt2.x;
     let upper_heap = new Heap(comparator);
     let lower_heap = new Heap(comparator);
     console.log(max_index);
     console.log(min_index);
     for (let i = 0; i < pts.length; i++) {
         if ((min_index <= max_index)) {
-            if ((min_index <= i) && (i < max_index)) {
+            if ((min_index < i) && (i <= max_index)) {
                 upper_heap.push(pts[i]);
             } else {
                 lower_heap.push(pts[i]);
             }
         }else{
-            if ((min_index >= i) && (i > max_index)) {
+            if ((min_index > i) && (i >= max_index)) {
                 lower_heap.push(pts[i]);
             } else {
                 upper_heap.push(pts[i]);
@@ -62,6 +62,8 @@ function split_to_chains(pts){
             all_pts.push(new StackElement(lower_heap.pop(), "lower"));
         }
     }
+    console.log("all_pts")
+    console.log(all_pts)
     if (upper_heap.length > 0) {
         while (upper_heap.length > 0) {
             all_pts.push(new StackElement(upper_heap.pop(), "upper"))
@@ -72,6 +74,8 @@ function split_to_chains(pts){
             all_pts.push(new StackElement(lower_heap.pop(), "lower"))
         }
     }
+    console.log("all_pts final")
+    console.log(all_pts)
     return all_pts
 }
 
