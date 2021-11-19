@@ -78,11 +78,15 @@ export function splitPoints(polygon){
         }
     }
     return [bot_points, top_points];
-};
+}
 
+function x_monotone_triangulation(stackElements){
+
+    return [];
+}
 
 export function getDiagonals(polygon){
     var all_pts = split_to_chains(polygon);
-    // var diags = x_monotone_triangulation(all_pts);
-    return [];
-};
+    var diags = x_monotone_triangulation(all_pts);
+    return diags;
+}
