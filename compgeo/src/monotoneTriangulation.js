@@ -1,4 +1,5 @@
 import Heap from 'heap-js';
+import Stack from 'stackjs';
 class StackElement {
     constructor(pt, chain) {
         this.pt = pt;
@@ -81,6 +82,39 @@ export function splitPoints(polygon){
 }
 
 function x_monotone_triangulation(stackElements){
+    let stack = new Stack();
+    stack.push(0);
+    stack.push(1);
+    let diagonals = [];
+    for (let j=2; j < stackElements.length - 1; j++) {
+        if (stackElements[stack.peek()].chain !== stackElements[j].chain){
+            while (stack.size() > 1) {
+                let u = stack.pop();
+                diagonals.append(LineSegment(stackElements[u].pt, stackElements[j].pt))
+                show_polygon_with_diagonals(stackElements, diagonals, true)
+            }
+            stack.pop()
+            stack.push(j - 1)
+            stack.push(j)
+        }
+        else {
+            var u = stack.pop(0);
+            var u_l = u;
+            while (stack && visible(stackElements, j, u) ) {
+                diagonals.append(LineSegment(stackElements[u].pt, stackElements[j].pt))
+                show_polygon_with_diagonals(stackElements, diagonals, true)
+                if stack:
+                u = stack.pop(0)
+            }
+            stack.push(u_l)
+            stack.push(j)
+        }
+    }
+    for (u in stack[1:-1]){
+        diagonals.append(LineSegment(stackElements[u].pt, stackElements[-1].pt))
+        show_polygon_with_diagonals(stackElements, diagonals, true)
+    }
+    return diagonals
 
     return [];
 }
