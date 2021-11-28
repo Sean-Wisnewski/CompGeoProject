@@ -1,26 +1,38 @@
-import React from "react";
+import React, {useState} from "react";
 import ReactDOM from "react-dom";
 import SplitterLayout from "react-splitter-layout";
 import "react-splitter-layout/lib/index.css";
-class HorizontalLayoutWithIFrame extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onDragStart = this.onDragStart.bind(this);
-        this.onDragEnd = this.onDragEnd.bind(this);
-        this.state = {
-            dragging: false
-        };
+import {useCanvas} from "./hooks/useCanvas";
+
+function HorizontalLayoutWithIFrame(){
+    const [dragging, setDragging] = useState(false);
+    const [width, setWidth] = useState(0);
+
+    const [ coordinates, setCoordinates, canvasRef, canvasWidth, canvasHeight ] = useCanvas();
+
+    const handleCanvasClick=(event)=>{
+        const currentCoord = { x: event.clientX, y: event.clientY };
+        setCoordinates([...coordinates, currentCoord]);
+    };
+
+    const handleClearCanvas=(event)=>{
+        setCoordinates([]);
+    };
+
+    const onDragStart = () => {
+        setDragging(true);
+    };
+
+    const onDragEnd = () => {
+        setDragging(false);
+    };
+    
+    const onSecondaryPaneSizeChange = (f) => {
+        console.log(f);
+        setWidth(f);
     }
 
-    onDragStart() {
-        this.setState({ dragging: true });
-    }
-
-    onDragEnd() {
-        this.setState({ dragging: false });
-    }
-
-    renderDetailLinks() {
+    const renderDetailLinks = () => {
         return (
             <div>
                 Refer to the following pages for details:
@@ -38,20 +50,21 @@ class HorizontalLayoutWithIFrame extends React.Component {
                 </ul>
             </div>
         );
-    }
+    };
 
-    render() {
-        return (
-            <SplitterLayout onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
-                <div className="pane-1">
-                    <h2>1st Pane</h2>
-                </div>
-                <div className="pane-2">
-                    <h2>2nd Pane</h2>
-                </div>
-            </SplitterLayout>
-        );
-    }
+    return <SplitterLayout onDragStart={onDragStart} onDragEnd={onDragEnd} onSecondaryPaneSizeChange = {onSecondaryPaneSizeChange}>
+        <div className="pane-1">
+            <canvas
+                className="App-canvas"
+                ref={canvasRef}
+                width={canvasWidth - width - 8}
+                height={canvasHeight - 8}
+                onClick={handleCanvasClick} />
+        </div>
+        <div className="pane-2">
+            <h2>2nd Pane</h2>
+        </div>
+    </SplitterLayout>;
 }
 
 export default HorizontalLayoutWithIFrame;
