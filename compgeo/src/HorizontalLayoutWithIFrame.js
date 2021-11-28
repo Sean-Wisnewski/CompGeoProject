@@ -4,6 +4,8 @@ import SplitterLayout from "react-splitter-layout";
 import "react-splitter-layout/lib/index.css";
 import {useCanvas} from "./hooks/useCanvas";
 
+import Pseudocode from "./pseudocode/pseudocode";
+
 function HorizontalLayoutWithIFrame(){
     const [dragging, setDragging] = useState(false);
     const [width, setWidth] = useState(0);
@@ -51,7 +53,6 @@ function HorizontalLayoutWithIFrame(){
             </div>
         );
     };
-
     return <SplitterLayout onDragStart={onDragStart} onDragEnd={onDragEnd} onSecondaryPaneSizeChange = {onSecondaryPaneSizeChange}>
         <div className="pane-1">
             <canvas
@@ -62,7 +63,8 @@ function HorizontalLayoutWithIFrame(){
                 onClick={handleCanvasClick} />
         </div>
         <div className="pane-2">
-            <h2>2nd Pane</h2>
+            {/*<h2>2nd Pane</h2>*/}
+            <Pseudocode />
         </div>
     </SplitterLayout>;
 }

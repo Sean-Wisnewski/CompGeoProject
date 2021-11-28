@@ -1,3 +1,4 @@
+const mytext = `
 import Heap from 'heap-js';
 import Stack from 'stackjs';
 class StackElement {
@@ -66,12 +67,12 @@ export function split_to_chains(pts){
     console.log(all_pts)
     if (upper_heap.length > 0) {
         while (upper_heap.length > 0) {
-            all_pts.push(new StackElement(upper_heap.pop(), "upper"))
+            all_pts.push(new StackElement(upper_heap.pop(), "upper"));
         }
     }
     if (lower_heap.length > 0) {
         while (lower_heap.length > 0) {
-            all_pts.push(new StackElement(lower_heap.pop(), "lower"))
+            all_pts.push(new StackElement(lower_heap.pop(), "lower"));
         }
     }
     console.log("all_pts final")
@@ -79,11 +80,10 @@ export function split_to_chains(pts){
     return all_pts
 }
 
-
 export function splitPoints(polygon){
-    var all_pts = split_to_chains(polygon);
-    var top_points = [];
-    var bot_points = [];
+    let all_pts = split_to_chains(polygon);
+    let top_points = [];
+    let bot_points = [];
     for (const element of all_pts){
         console.log(element.chain)
         if (element.chain === "lower"){
@@ -95,6 +95,10 @@ export function splitPoints(polygon){
         }
     }
     return [bot_points, top_points];
+}
+
+function orient_test(p, q, r) {
+    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 }
 
 function visible(pts, j, u) {
@@ -148,7 +152,13 @@ function x_monotone_triangulation(pts){
 }
 
 export function getDiagonals(polygon){
-    var all_pts = split_to_chains(polygon);
-    var diags = x_monotone_triangulation(all_pts);
+    let all_pts = split_to_chains(polygon);
+    let diags = x_monotone_triangulation(all_pts);
     return diags;
 }
+`
+
+function Pseudocode(){
+    return (<p>{mytext}</p>);
+}
+export default Pseudocode ;

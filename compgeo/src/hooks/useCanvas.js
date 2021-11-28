@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {getDiagonals, splitPoints, split_to_chains} from "../monotoneTriangulation";
+import {getDiagonals, splitPoints, split_to_chains} from "../trianglation/monotoneTriangulation";
 
 // Path2D for a Heart SVG
 const heartSVG = "M1045 2224 c-291 -34 -488 -122 -678 -303 -442 -422 -459 -1112 -38 -1554 438 -459 1160 -457 1596 4 326 344 394 864 168 1279 -113 208 -307 386 -521 481 -165 72 -379 110 -527 93z\""
