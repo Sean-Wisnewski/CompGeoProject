@@ -15,7 +15,7 @@ export const canvasWidth = window.innerWidth * WINDOW_FRACTION;
 export const canvasHeight = window.innerHeight * WINDOW_FRACTION;
 
 export function draw(ctx, location){
-    console.log("attempting to draw")
+    // console.log("attempting to draw")
     if (FUNKIFY){
         ctx.fillStyle = 'green';
     }else{
@@ -31,7 +31,7 @@ export function draw(ctx, location){
 };
 
 export function drawline(ctx, start, end, color="black"){
-    console.log("attempting to draw")
+    // console.log("attempting to draw")
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
