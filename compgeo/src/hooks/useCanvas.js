@@ -42,9 +42,8 @@ export function drawline(ctx, start, end, color="black"){
     ctx.restore();
 };
 
-export function useCanvas(){
+export function useCanvas(addPoints, coordinates, diagonals){
     const canvasRef = useRef(null);
-    const [coordinates, setCoordinates] = useState([]);
 
     useEffect(()=>{
         const canvasObj = canvasRef.current;
@@ -96,13 +95,12 @@ export function useCanvas(){
         }else{
             color = 'green';
         }
-        if (coordinates.length >= 4){
-            let diagonals = getDiagonals(coordinates);
+        if (diagonals.length >= 0){
             for (const diag of diagonals){
                 drawline(ctx, diag.pt0, diag.pt1, color);
             }
         }
     });
 
-    return [ coordinates, setCoordinates, canvasRef, canvasWidth, canvasHeight ];
+    return [ canvasRef, canvasWidth, canvasHeight ];
 }

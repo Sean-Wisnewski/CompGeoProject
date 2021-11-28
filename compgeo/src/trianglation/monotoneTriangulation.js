@@ -1,5 +1,10 @@
 import Heap from 'heap-js';
-import Stack from 'stackjs';
+import Stack from 'stackjs'
+import {setMark} from "../pseudocode/pseudocode";
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class StackElement {
     constructor(pt, chain) {
         this.pt = pt;
@@ -150,8 +155,14 @@ function x_monotone_triangulation(pts){
     return diagonals
 }
 
-export function getDiagonals(polygon){
+export async function getDiagonals(polygon, toggleTag, setDiag, delay){
+    toggleTag("split");
+    await sleep(delay);
     let all_pts = split_to_chains(polygon);
-    let diags = x_monotone_triangulation(all_pts);
-    return diags;
+    toggleTag("split");
+    toggleTag("diag");
+    await sleep(delay);
+    setDiag(x_monotone_triangulation(all_pts));
+    toggleTag("diag");
+    console.log("finished")
 }

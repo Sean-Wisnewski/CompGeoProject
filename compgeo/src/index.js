@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles.css';
 import reportWebVitals from './reportWebVitals';
-import HorizontalLayoutWithIFrame from "./HorizontalLayoutWithIFrame";
+import Debugger from "./Debugger";
 
 ReactDOM.render(
   <React.StrictMode>
-    <HorizontalLayoutWithIFrame/>
+    <Debugger/>
   </React.StrictMode>,
   document.getElementById('root')
 );
