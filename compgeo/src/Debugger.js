@@ -5,6 +5,7 @@ import {useCanvas} from "./hooks/useCanvas";
 import { waitUntil } from 'async-wait-until';
 
 import Pseudocode from "./pseudocode/pseudocode";
+import Description from "./Description"
 import {getDiagonals} from "./trianglation/monotoneTriangulation";
 const DELAY_DEFAULT = 100;
 
@@ -90,6 +91,7 @@ function Debugger(){
             <Pseudocode run={process} clear={handleClearCanvas} step={Step} tags={tags}
                         delay={delay} setDelay={setDelay}
                         stepping={stepping} setStepping={setStepping}/>
+            <Description />
         </div>
     </SplitterLayout>;
 }
