@@ -7,7 +7,7 @@ import { waitUntil } from 'async-wait-until';
 import Pseudocode from "./pseudocode/pseudocode";
 import Description from "./Description"
 import {getDiagonals} from "./trianglation/monotoneTriangulation";
-const DELAY_DEFAULT = 100;
+const DELAY_DEFAULT = 300;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
