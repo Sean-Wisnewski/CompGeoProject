@@ -65,6 +65,12 @@ function Debugger(){
     const handleClearCanvas=(event)=>{
         setCoordinates([]);
         setDiagonals([]);
+        let planes = document.getElementsByClassName('App-canvas');
+        console.log(planes)
+        for(var i = 0; i < planes.length; i++) {
+          console.log("changing color")
+          planes[i].style.backgroundColor='white'
+        }
     };
 
     const onSecondaryPaneSizeChange = (width) => {
@@ -79,7 +85,7 @@ function Debugger(){
     return <SplitterLayout
         // onDragStart={onDragStart} onDragEnd={onDragEnd}
         onSecondaryPaneSizeChange = {onSecondaryPaneSizeChange}>
-        <div className="pane-1">
+        <div className="pane-1" id='pane-1'>
             <canvas
                 className="App-canvas"
                 ref={canvasRef}

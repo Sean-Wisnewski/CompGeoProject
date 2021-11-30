@@ -42,6 +42,39 @@ export function drawline(ctx, start, end, color="black"){
     ctx.restore();
 };
 
+function checkMonotonicity(pts) {
+  // make a copy
+  let sorted_pts = pts.slice(0, pts.length);
+  sorted_pts.sort((a, b) => (a.x > b.x) ? 1 : -1)
+  //console.log(sorted_pts)
+  let local_mins = 0;
+  let n = pts.length;
+  // js is dumb as shit, the "modulo" operator is actually just remainder, and doesn't
+  // handle negative numbers correctly
+  const modulo = (a, n) => ((a % n) + n) % n
+  for (var i = 0; i < pts.length -1; i++) {
+    let pt_x = pts[i].x
+    let pt_x_p_1 = pts[modulo((i+1), n)].x
+    let pt_x_m_1 = pts[modulo((i-1), n)].x
+    //console.log(pt_x)
+    //console.log(pt_x_p_1)
+    //console.log(pt_x_m_1)
+    if (pt_x < pt_x_p_1 && pt_x < pt_x_m_1) {
+      local_mins++;
+    }
+  }
+  console.log(local_mins)
+  if (local_mins == 1) {
+    console.log("monotone");
+    return true;
+  }
+  else {
+    console.log("not monotone");
+    return false;
+
+  }
+}
+
 export function useCanvas(addPoints, coordinates, diagonals){
     const canvasRef = useRef(null);
 
@@ -50,6 +83,23 @@ export function useCanvas(addPoints, coordinates, diagonals){
         const ctx = canvasObj.getContext('2d');
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
+        var isMonotone;
+        if (coordinates.length > 2) {
+          isMonotone = checkMonotonicity(coordinates);
+        }
+        else {
+          isMonotone = true;
+        }
+
+        if (!isMonotone) {
+          let planes = document.getElementsByClassName('App-canvas');
+          console.log(planes)
+          for(var i = 0; i < planes.length; i++) {
+            console.log("changing color")
+            planes[i].style.backgroundColor='red'
+          }
+
+        }
 
         // draw all coordinates held in state
         let color;
@@ -66,6 +116,16 @@ export function useCanvas(addPoints, coordinates, diagonals){
             drawline(ctx, coordinates[coordinates.length - 1], coordinates[0], color);
         }
 
+        if (FUNKIFY){
+            color = 'red';
+        }else{
+            color = 'green';
+        }
+        if (diagonals.length >= 0){
+            for (const diag of diagonals){
+                drawline(ctx, diag.pt0, diag.pt1, color);
+            }
+        }
         // var [bot_points, top_points] = splitPoints(coordinates);
         // if (top_points.length > 1) {
         //     for (let i = 0; i < top_points.length - 1; i++) {
@@ -90,16 +150,6 @@ export function useCanvas(addPoints, coordinates, diagonals){
         //     }
         // }
 
-        if (FUNKIFY){
-            color = 'red';
-        }else{
-            color = 'green';
-        }
-        if (diagonals.length >= 0){
-            for (const diag of diagonals){
-                drawline(ctx, diag.pt0, diag.pt1, color);
-            }
-        }
     });
 
     return [ canvasRef, canvasWidth, canvasHeight ];
