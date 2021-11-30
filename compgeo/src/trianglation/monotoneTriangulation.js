@@ -116,7 +116,7 @@ function visible(pts, j, u) {
 async function x_monotone_triangulation(getVar, setVar){
     // tagOn("start-stack"); // Initialize a stack
     // await pause("start-stack");
-    setVar("stack",new Stack());
+    setVar("stack", new Stack());
     // tagOff("start-stack");
 
     // tagOn("stack-push-0"); // Add index 0 to the top of the stack
@@ -135,104 +135,106 @@ async function x_monotone_triangulation(getVar, setVar){
     // tagOff("start-diagonals");
 
 
-    for (let j=2; j < pts.length - 1; j++) {
-        if (pts[stack.peek()].chain !== pts[j].chain){
+    // for (let j=2; j < pts.length - 1; j++) {
+    for (setVar("j", 2); getVar("j") < pts.length - 1; setVar("j", getVar("j") + 1)) {
+        if (pts[getVar("stack").peek()].chain !== pts[getVar("j")].chain){
 
-            while (stack.size() > 1) {
+            while (getVar("stack").size() > 1) {
                 // tagOn("same-chain-if-while-more-than-2"); // while there are at least 2 points on the stack
                 // await pause("same-chain-if-while-more-than-2");
                 // tagOff("same-chain-if-while-more-than-2");
 
-                tagOn("same-chain-if-while-more-than-2-add-diag"); // Pop a point U off the top of the stack and add a diagonal from U to J
-                await pause("same-chain-if-while-more-than-2-add-diag");
-                let u = stack.pop();
-                pushDiag(new LineSegment(pts[u].pt, pts[j].pt));
-                tagOff("same-chain-if-while-more-than-2-add-diag");
+                // tagOn("same-chain-if-while-more-than-2-add-diag"); // Pop a point U off the top of the stack and add a diagonal from U to J
+                // await pause("same-chain-if-while-more-than-2-add-diag");
+                setVar("u", getVar("stack").pop());
+                getVar("diagonals").push(new LineSegment(pts[getVar("u")].pt, pts[getVar("j")].pt));
+                // tagOff("same-chain-if-while-more-than-2-add-diag");
                 // show_polygon_with_diagonals(stackElements, diagonals, true)
             }
-            stack = new Stack();
-            stack.push(j - 1)
-            stack.push(j)
+            setVar("stack", new Stack());
+            getVar("stack").push(getVar("j") - 1);
+            getVar("stack").push(getVar("j"));
         } else {
-            tagOn("same-chain-else"); // else
-            await pause("same-chain-else");
-            tagOff("same-chain-else");
+            // tagOn("same-chain-else"); // else
+            // await pause("same-chain-else");
+            // tagOff("same-chain-else");
 
-            tagOn("same-chain-else-pop"); // Pop a point U off the top of the stack
-            await pause("same-chain-else-pop");
-            let u = stack.pop();
-            let u_l = u;
-            tagOff("same-chain-else-pop");
+            // tagOn("same-chain-else-pop"); // Pop a point U off the top of the stack
+            // await pause("same-chain-else-pop");
+            setVar("u", getVar("stack").pop());
+            setVar("u_l", getVar("u"))
+            // tagOff("same-chain-else-pop");
 
-            while ((!stack.isEmpty()) && visible(pts, j, u) ) {
-                tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
-                await pause("same-chain-else-while");
-                tagOff("same-chain-else-while");
+            while ((!getVar("stack").isEmpty()) && visible(pts, getVar("j"), getVar("u")) ) {
+                // tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
+                // await pause("same-chain-else-while");
+                // tagOff("same-chain-else-while");
 
-                tagOn("same-chain-else-while-add"); // Add a diagonal from u to j
-                await pause("same-chain-else-while-add");
-                pushDiag(new LineSegment(pts[u].pt, pts[j].pt));
-                tagOff("same-chain-else-while-add");
+                // tagOn("same-chain-else-while-add"); // Add a diagonal from u to j
+                // await pause("same-chain-else-while-add");
+                getVar("diagonals").push(new LineSegment(pts[getVar("u")].pt, pts[getVar("j")].pt));
+                // tagOff("same-chain-else-while-add");
                 // show_polygon_with_diagonals(stackElements, diagonals, true)
-                tagOn("same-chain-else-while-if-not-empty");// If the stack is not empty
-                await pause("same-chain-else-while-if-not-empty");
-                tagOff("same-chain-else-while-if-not-empty");
-                if (!stack.isEmpty()) {
-                    tagOn("same-chain-else-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
-                    await pause("same-chain-else-while-if-not-empty-popped");
-                    u = stack.pop();
-                    tagOff("same-chain-else-while-if-not-empty-popped");
+                // tagOn("same-chain-else-while-if-not-empty");// If the stack is not empty
+                // await pause("same-chain-else-while-if-not-empty");
+                // tagOff("same-chain-else-while-if-not-empty");
+                if (!getVar("stack").isEmpty()) {
+                    // tagOn("same-chain-else-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
+                    // await pause("same-chain-else-while-if-not-empty-popped");
+                    // u = getVar("stack").pop();
+                    setVar("u", getVar("stack").pop());
+                    // tagOff("same-chain-else-while-if-not-empty-popped");
                 }
             }
-            tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
-            await pause("same-chain-else-while");
-            tagOff("same-chain-else-while");
+            // tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
+            // await pause("same-chain-else-while");
+            // tagOff("same-chain-else-while");
 
-            tagOn("same-chain-else-push-ul");// Push UL onto the stack
-            await pause("same-chain-else-ul");
-            stack.push(u_l);
-            tagOff("same-chain-else-push-ul");
+            // tagOn("same-chain-else-push-ul");// Push UL onto the stack
+            // await pause("same-chain-else-ul");
+            getVar("stack").push(getVar("u_l"));
+            // tagOff("same-chain-else-push-ul");
 
 
-            tagOn("same-chain-else-push-j"); // Push J onto the stack
-            await pause("same-chain-else-push-j");
-            stack.push(j);
-            tagOff("same-chain-else-push-j");
+            // tagOn("same-chain-else-push-j"); // Push J onto the stack
+            // await pause("same-chain-else-push-j");
+            getVar("stack").push(getVar("j"));
+            // tagOff("same-chain-else-push-j");
         }
     }
-    stack.pop()
-    while (stack.size() > 1) {
-        tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
-        await pause("last-while-if-not-empty");
-        tagOff("last-while-if-not-empty");
+    getVar("stack").pop()
+    while (getVar("stack").size() > 1) {
+        // tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
+        // await pause("last-while-if-not-empty");
+        // tagOff("last-while-if-not-empty");
 
-        tagOn("last-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
-        await pause("last-while-if-not-empty-popped");
-        let u = stack.pop();
-        tagOff("last-while-if-not-empty-popped");
+        // tagOn("last-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
+        // await pause("last-while-if-not-empty-popped");
+        setVar("u", getVar("stack").pop());
+        // tagOff("last-while-if-not-empty-popped");
 
-        tagOn("last-while-if-not-empty-add-diag"); // Add a diagonal from U to the last point in the list of points
-        await pause("last-while-if-not-empty-add-diag");
-        pushDiag(new LineSegment(pts[u].pt, pts[pts.length-1].pt));
-        tagOff("last-while-if-not-empty-add-diag");
+        // tagOn("last-while-if-not-empty-add-diag"); // Add a diagonal from U to the last point in the list of points
+        // await pause("last-while-if-not-empty-add-diag");
+        getVar("diagonals").push(new LineSegment(pts[getVar("u")].pt, pts[pts.length-1].pt));
+        // tagOff("last-while-if-not-empty-add-diag");
         // show_polygon_with_diagonals(stackElements, diagonals, true)
     }
-    tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
-    await pause("last-while-if-not-empty");
-    tagOff("last-while-if-not-empty");
+    // tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
+    // await pause("last-while-if-not-empty");
+    // tagOff("last-while-if-not-empty");
 }
 
 export async function getDiagonals(getVar, setVar, setAddPoints){
     setAdding(false);
-    tagOn("split");
-    await pause("split");
+    // tagOn("split");
+    // await pause("split");
     setVar("all_pts", split_to_chains(getVar("coordinates")));
-    tagOff("split");
-    tagOn("diag");
-    await pause("diag");
+    // tagOff("split");
+    // tagOn("diag");
+    // await pause("diag");
     await x_monotone_triangulation(getVar, setVar);
 
-    tagOff("diag");
+    // tagOff("diag");
     setAdding(true);
     console.log("finished");
 }
