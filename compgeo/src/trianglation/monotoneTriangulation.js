@@ -113,35 +113,35 @@ function visible(pts, j, u) {
     return (j - (1 + u)) > 0;
 }
 
-async function x_monotone_triangulation(pts, tagOn, tagOff, pause, pushDiag, clearDiag){
-    tagOn("start-stack"); // Initialize a stack
-    await pause("start-stack");
-    let stack = new Stack();
-    tagOff("start-stack");
+async function x_monotone_triangulation(getVar, setVar){
+    // tagOn("start-stack"); // Initialize a stack
+    // await pause("start-stack");
+    setVar("stack",new Stack());
+    // tagOff("start-stack");
 
-    tagOn("stack-push-0"); // Add index 0 to the top of the stack
-    await pause("stack-push-0");
-    stack.push(0);
-    tagOff("stack-push-0");
+    // tagOn("stack-push-0"); // Add index 0 to the top of the stack
+    // await pause("stack-push-0");
+    getVar("stack").push(0);
+    // tagOff("stack-push-0");
 
-    tagOn("stack-push-1"); // Add index 1 to the top of the stack
-    await pause("stack-push-1");
-    stack.push(1);
-    tagOff("stack-push-1");
+    // tagOn("stack-push-1"); // Add index 1 to the top of the stack
+    // await pause("stack-push-1");
+    getVar("stack").push(1);
+    // tagOff("stack-push-1");
 
-    tagOn("start-diagonals"); // Initialize an empty list of diagonals
-    await pause("start-diagonals");
-    clearDiag();
-    tagOff("start-diagonals");
+    // tagOn("start-diagonals"); // Initialize an empty list of diagonals
+    // await pause("start-diagonals");
+    getVar("diagonals", []);
+    // tagOff("start-diagonals");
 
 
     for (let j=2; j < pts.length - 1; j++) {
         if (pts[stack.peek()].chain !== pts[j].chain){
 
             while (stack.size() > 1) {
-                tagOn("same-chain-if-while-more-than-2"); // while there are at least 2 points on the stack
-                await pause("same-chain-if-while-more-than-2");
-                tagOff("same-chain-if-while-more-than-2");
+                // tagOn("same-chain-if-while-more-than-2"); // while there are at least 2 points on the stack
+                // await pause("same-chain-if-while-more-than-2");
+                // tagOff("same-chain-if-while-more-than-2");
 
                 tagOn("same-chain-if-while-more-than-2-add-diag"); // Pop a point U off the top of the stack and add a diagonal from U to J
                 await pause("same-chain-if-while-more-than-2-add-diag");
@@ -222,15 +222,15 @@ async function x_monotone_triangulation(pts, tagOn, tagOff, pause, pushDiag, cle
     tagOff("last-while-if-not-empty");
 }
 
-export async function getDiagonals(polygon, tagOn, tagOff, pause, setDiag, pushDiag,clearDiag, setAdding){
+export async function getDiagonals(getVar, setVar, setAddPoints){
     setAdding(false);
     tagOn("split");
     await pause("split");
-    let all_pts = split_to_chains(polygon);
+    setVar("all_pts", split_to_chains(getVar("coordinates")));
     tagOff("split");
     tagOn("diag");
     await pause("diag");
-    await x_monotone_triangulation(all_pts, tagOn, tagOff, pause, pushDiag, clearDiag);
+    await x_monotone_triangulation(getVar, setVar);
 
     tagOff("diag");
     setAdding(true);

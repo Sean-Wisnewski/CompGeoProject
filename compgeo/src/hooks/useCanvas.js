@@ -75,7 +75,7 @@ function checkMonotonicity(pts) {
   }
 }
 
-export function useCanvas(addPoints, coordinates, diagonals){
+export function useCanvas(addPoints, getVar){
     const canvasRef = useRef(null);
 
     useEffect(()=>{
@@ -83,9 +83,9 @@ export function useCanvas(addPoints, coordinates, diagonals){
         const ctx = canvasObj.getContext('2d');
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
-        var isMonotone;
-        if (coordinates.length > 2) {
-          isMonotone = checkMonotonicity(coordinates);
+        let isMonotone;
+        if (getVar("coordinates").length > 2) {
+          isMonotone = checkMonotonicity(getVar("coordinates"));
         }
         else {
           isMonotone = true;
@@ -94,7 +94,7 @@ export function useCanvas(addPoints, coordinates, diagonals){
         if (!isMonotone) {
           let planes = document.getElementsByClassName('App-canvas');
           console.log(planes)
-          for(var i = 0; i < planes.length; i++) {
+          for(let i = 0; i < planes.length; i++) {
             console.log("changing color")
             planes[i].style.backgroundColor='red'
           }
@@ -108,12 +108,12 @@ export function useCanvas(addPoints, coordinates, diagonals){
         }else{
             color = 'black';
         }
-        coordinates.forEach((coordinate)=>{draw(ctx, coordinate)});
-        if (coordinates.length > 1) {
-            for (let i = 0; i < coordinates.length - 1; i++) {
-                drawline(ctx, coordinates[i], coordinates[i + 1], color);
+        getVar("coordinates").forEach((coordinate)=>{draw(ctx, coordinate)});
+        if (getVar("coordinates").length > 1) {
+            for (let i = 0; i < getVar("coordinates").length - 1; i++) {
+                drawline(ctx, getVar("coordinates")[i], getVar("coordinates")[i + 1], color);
             }
-            drawline(ctx, coordinates[coordinates.length - 1], coordinates[0], color);
+            drawline(ctx, getVar("coordinates")[getVar("coordinates").length - 1], getVar("coordinates")[0], color);
         }
 
         if (FUNKIFY){
@@ -121,34 +121,11 @@ export function useCanvas(addPoints, coordinates, diagonals){
         }else{
             color = 'green';
         }
-        if (diagonals.length >= 0){
-            for (const diag of diagonals){
+        if (getVar("diagonals").length >= 0){
+            for (const diag of getVar("diagonals")){
                 drawline(ctx, diag.pt0, diag.pt1, color);
             }
         }
-        // var [bot_points, top_points] = splitPoints(coordinates);
-        // if (top_points.length > 1) {
-        //     for (let i = 0; i < top_points.length - 1; i++) {
-        //         drawline(ctx, top_points[i], top_points[i + 1], "red");
-        //     }
-        //     drawline(ctx, top_points[top_points.length - 1], top_points[0], "red");
-        // }
-        // if (bot_points.length > 1) {
-        //     for (let i = 0; i < bot_points.length - 1; i++) {
-        //         drawline(ctx, bot_points[i], bot_points[i + 1], "blue");
-        //     }
-        //     console.log(bot_points)
-        //     drawline(ctx, bot_points[bot_points.length - 1], bot_points[0],"blue");
-        // }
-
-        // let all_pts = split_to_chains(coordinates);
-        // console.log("All out");
-        // console.log(all_pts)
-        // if (all_pts.length > 1) {
-        //     for (let i = 0; i < all_pts.length - 1; i++) {
-        //         drawline(ctx, all_pts[i].pt, all_pts[i + 1].pt, "orange");
-        //     }
-        // }
 
     });
 

@@ -14,17 +14,36 @@ function sleep(ms) {
 }
 
 function Debugger(){
-    const [coordinates, setCoordinates] = useState([]);
-    const [diagonals, setDiagonals] = useState([]);
+
+    const [variables, setVariables] = useState(new Map([["coordinates",[]], ["diagonals",[]]]));
+    const [runPointer, setRunPointer] = useState(-1);
     const [addPoints, setAddPoints] = useState(true);
     const [tags, setTags] = useState(new Map());
     const [stepping, setStepping] = useState(false);
     const [step, setStep] = useState(false);
-
     const [delay, setDelay] = useState(DELAY_DEFAULT);
     const [width, setWidth] = useState(0);
 
-    const [canvasRef, canvasWidth, canvasHeight ] = useCanvas(addPoints, coordinates, diagonals);
+    const setVar = (variable, value) => {
+        console.log(variable, value);
+        variables.set(variable, value);
+        setVariables(new Map(variables));
+    }
+    const getVar = (variable) => {
+        return variables.get(variable);
+    }
+    const clearVars = () => {
+        setVariables(new Map());
+    }
+    const setDiagonals = (value)=>{
+        setVar("diagonals", value);
+    }
+    const setCoordinates = (value)=>{
+        setVar("coordinates", value);
+    }
+
+    const [canvasRef, canvasWidth, canvasHeight ] = useCanvas(addPoints, getVar);
+
 
     function tagOn(tag){
         tags.set(tag, true);
@@ -43,22 +62,22 @@ function Debugger(){
     }
 
     const pushDiag = (diag) => {
-        diagonals.push(diag);
-        setDiagonals([...diagonals]);
+        getVar("diagonals").push(diag);
+        setVar("diagonals", [...getVar("diagonals")]);
     }
 
     const clearDiag = () => {
-        setDiagonals([])
+        setVar("diagonals",[]);
     }
 
     const process = () => {
-        getDiagonals(coordinates, tagOn, tagOff, pause, setDiagonals, pushDiag, clearDiag, setAddPoints);
+        getDiagonals(getVar, setVar, setAddPoints);
     }
 
     const handleCanvasClick=(event)=>{
         if (addPoints) {
             const currentCoord = {x: event.clientX, y: event.clientY};
-            setCoordinates([...coordinates, currentCoord]);
+            setCoordinates([...getVar("coordinates"), currentCoord]);
         }
     };
 
