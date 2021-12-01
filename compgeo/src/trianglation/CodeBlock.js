@@ -21,12 +21,13 @@ export default class CodeBlock extends React.Component{
 
     render() {
         if (this.pseudocode != null) {
-            if (this.state.marked) { // Tagged
-                return (<p>
-                    <mark>{this.pseudocode}</mark>
-                </p>);
-            }
             return (<p>{this.pseudocode}</p>);
+        }
+        return null;
+    }
+    renderMarked() {
+        if (this.pseudocode != null) {
+            return (<p><mark>{this.pseudocode}</mark></p>);
         }
         return null;
     }

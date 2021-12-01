@@ -113,11 +113,13 @@ export function visible(pts, j, u) {
 async function x_monotone_triangulation(variables){
     // tagOn("start-stack"); // Initialize a stack
     // await pause("start-stack");
+    console.log("EPointer:", 0)
     variables.stack = new Stack();
     // tagOff("start-stack");
 
     // tagOn("stack-push-0"); // Add index 0 to the top of the stack
     // await pause("stack-push-0");
+    console.log("EPointer:", 1)
     variables.stack.push(0);
     // tagOff("stack-push-0");
 
@@ -128,14 +130,24 @@ async function x_monotone_triangulation(variables){
 
     // tagOn("start-diagonals"); // Initialize an empty list of diagonals
     // await pause("start-diagonals");
+    console.log("EPointer:", 2);
     variables.diagonals = [];
     // tagOff("start-diagonals");
 
 
-    // for (let j=2; j < pts.length - 1; j++) {
+    // for (let j=2; j < pts.length - 1; j;++) {
+    console.log("EPointer:", 3);
     for (variables.j = 2; variables.j < variables.pts.length - 1; variables.j = variables.j + 1) {
+        console.log("EPointer:", 4);
+        console.log("EPointer:", 5);
+        console.log(variables.pts)
+        console.log(variables.stack.peek())
+        console.log(variables.j)
+        console.log(variables.pts[variables.stack.peek()].chain)
+        console.log(variables.pts[variables.j].chain)
         if (variables.pts[variables.stack.peek()].chain !== variables.pts[variables.j].chain){
 
+            console.log("EPointer:", 6);
             while (variables.stack.size() > 1) {
                 // tagOn("same-chain-if-while-more-than-2"); // while there are at least 2 points on the stack
                 // await pause("same-chain-if-while-more-than-2");
@@ -143,82 +155,104 @@ async function x_monotone_triangulation(variables){
 
                 // tagOn("same-chain-if-while-more-than-2-add-diag"); // Pop a point U off the top of the stack and add a diagonal from U to J
                 // await pause("same-chain-if-while-more-than-2-add-diag");
+
+                console.log("EPointer:", 7);
                 variables.u= variables.stack.pop();
                 variables.diagonals.push(new LineSegment(variables.pts[variables.u].pt, variables.pts[variables.j].pt));
                 // tagOff("same-chain-if-while-more-than-2-add-diag");
                 // show_polygon_with_diagonals(stackElements, diagonals, true)
             }
+
+            console.log("EPointer:", 8);
             variables.stack= new Stack();
             variables.stack.push(variables.j - 1);
             variables.stack.push(variables.j);
         } else {
+            console.log("EPointer:", 9);
             // tagOn("same-chain-else"); // else
             // await pause("same-chain-else");
             // tagOff("same-chain-else");
 
             // tagOn("same-chain-else-pop"); // Pop a point U off the top of the stack
             // await pause("same-chain-else-pop");
+            console.log("EPointer:", 10);
             variables.u= variables.stack.pop();
             variables.u_l= variables.u;
             // tagOff("same-chain-else-pop");
 
+
             while ((!variables.stack.isEmpty()) && visible(variables.pts, variables.j, variables.u) ) {
+                console.log("EPointer:", 11);
                 // tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
                 // await pause("same-chain-else-while");
                 // tagOff("same-chain-else-while");
 
                 // tagOn("same-chain-else-while-add"); // Add a diagonal from u to j
                 // await pause("same-chain-else-while-add");
-                variables.diagonals.push(new LineSegment(variables.pts[variables.u].pt, variables.pts[variables.j].pt));
+                console.log("EPointer:", 12);
+                variables.diagonals.push(new LineSegment(
+                    variables.pts[variables.u].pt,
+                    variables.pts[variables.j].pt));
                 // tagOff("same-chain-else-while-add");
                 // show_polygon_with_diagonals(stackElements, diagonals, true)
                 // tagOn("same-chain-else-while-if-not-empty");// If the stack is not empty
                 // await pause("same-chain-else-while-if-not-empty");
                 // tagOff("same-chain-else-while-if-not-empty");
+                console.log("EPointer:", 13);
                 if (!variables.stack.isEmpty()) {
                     // tagOn("same-chain-else-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
                     // await pause("same-chain-else-while-if-not-empty-popped");
                     // u = variables.stack").pop();
+                    console.log("EPointer:", 14);
                     variables.u = variables.stack.pop();
                     // tagOff("same-chain-else-while-if-not-empty-popped");
                 }
             }
+            console.log("EPointer:", 11);
             // tagOn("same-chain-else-while"); // while the stack is not empty and U is visible from J
             // await pause("same-chain-else-while");
             // tagOff("same-chain-else-while");
 
             // tagOn("same-chain-else-push-ul");// Push UL onto the stack
             // await pause("same-chain-else-ul");
+
+            console.log("EPointer:", 15);
             variables.stack.push(variables.u_l);
-            // tagOff("same-chain-else-push-ul");
-
-
-            // tagOn("same-chain-else-push-j"); // Push J onto the stack
-            // await pause("same-chain-else-push-j");
             variables.stack.push(variables.j);
             // tagOff("same-chain-else-push-j");
         }
     }
+    console.log("EPointer:", 4)
+
+    console.log("EPointer:", 16);
     variables.stack.pop()
+
     while (variables.stack.size() > 1) {
+        console.log("EPointer:", 17);
         // tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
         // await pause("last-while-if-not-empty");
         // tagOff("last-while-if-not-empty");
 
         // tagOn("last-while-if-not-empty-popped");// Set U to a point popped off the top of the stack
         // await pause("last-while-if-not-empty-popped");
+        console.log("EPointer:", 18);
         variables.u = variables.stack.pop();
         // tagOff("last-while-if-not-empty-popped");
 
         // tagOn("last-while-if-not-empty-add-diag"); // Add a diagonal from U to the last point in the list of points
         // await pause("last-while-if-not-empty-add-diag");
-        variables.diagonals.push(new LineSegment(variables.pts[variables.u].pt, variables.pts[variables.pts.length-1].pt));
+        console.log("EPointer:", 19);
+        variables.diagonals.push(new LineSegment(
+            variables.pts[variables.u].pt,
+            variables.pts[variables.pts.length-1].pt));
         // tagOff("last-while-if-not-empty-add-diag");
         // show_polygon_with_diagonals(stackElements, diagonals, true)
     }
+    console.log("EPointer:", 17);
     // tagOn("last-while-if-not-empty"); // while the stack has more than one point on it
     // await pause("last-while-if-not-empty");
     // tagOff("last-while-if-not-empty");
+    console.log("EPointer:", 20);
 }
 
 export async function getDiagonals(variables, setAddPoints){

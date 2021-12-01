@@ -63,9 +63,9 @@ function checkMonotonicity(pts) {
       local_mins++;
     }
   }
-  console.log(local_mins)
+  // console.log(local_mins)
   if (local_mins == 1) {
-    console.log("monotone");
+    // console.log("monotone");
     return true;
   }
   else {
