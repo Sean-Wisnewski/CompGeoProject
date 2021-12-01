@@ -1,14 +1,12 @@
 import Heap from 'heap-js';
 import Stack from 'stackjs'
-
-
-class StackElement {
+export class StackElement {
     constructor(pt, chain) {
         this.pt = pt;
         this.chain = chain;
     }
 }
-class LineSegment {
+export class LineSegment {
     constructor(pt0, pt1, name) {
         if (pt0.x < pt1.x){
             this.pt0 = pt0;
@@ -20,7 +18,6 @@ class LineSegment {
         this.name = name;
     }
 }
-
 export function split_to_chains(pts){
     let pt_min = pts[0];
     let pt_max = pts[0];
@@ -102,7 +99,7 @@ function orient_test(p, q, r) {
     return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }
 
-function visible(pts, j, u) {
+export function visible(pts, j, u) {
     for (let i=u+1; i < j; i++) {
         if (pts[i].chain === "lower" && orient_test(pts[j].pt, pts[i].pt, pts[u].pt) >= 0) {
             return false;
