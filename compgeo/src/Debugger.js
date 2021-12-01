@@ -2,11 +2,8 @@ import React, {useState} from "react";
 import SplitterLayout from "react-splitter-layout";
 import "react-splitter-layout/lib/index.css";
 import {useCanvas} from "./hooks/useCanvas";
-import { waitUntil } from 'async-wait-until';
-
 import Pseudocode from "./pseudocode/pseudocode";
 import Description from "./Description"
-import {getDiagonals} from "./trianglation/monotoneTriangulation";
 
 
 function Debugger(){
@@ -23,7 +20,6 @@ function Debugger(){
     const variables = {...visualVariables};
 
     const updateVisualVariables = () => {
-        console.log(variables)
         setVisualVariables({...variables});
     }
     const setCoordinates = (value)=>{
@@ -41,7 +37,7 @@ function Debugger(){
         }
     };
 
-    const handleClearCanvas=(event)=>{
+    const handleClearCanvas=()=>{
         variables.coordinates = [];
         variables.diagonals = [];
         let planes = document.getElementsByClassName('App-canvas');
@@ -58,13 +54,7 @@ function Debugger(){
         setWidth(width);
     }
 
-    // const Step = () => {
-    //     // console.log("Stepping")
-    //     setStep(true);
-    // }
-
     return <SplitterLayout
-        // onDragStart={onDragStart} onDragEnd={onDragEnd}
         onSecondaryPaneSizeChange = {onSecondaryPaneSizeChange}>
         <div className="pane-1" id='pane-1'>
             <canvas

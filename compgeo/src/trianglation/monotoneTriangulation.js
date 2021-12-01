@@ -1,5 +1,6 @@
 import Heap from 'heap-js';
 import Stack from 'stackjs'
+import CodeBlock from "./CodeBlock";
 export class StackElement {
     constructor(pt, chain) {
         this.pt = pt;
@@ -268,4 +269,203 @@ export async function getDiagonals(variables, setAddPoints){
     // tagOff("diag");
     setAddPoints(true);
     console.log("finished");
+}
+
+export function getBlocks(){
+    const blocks = [
+        // Block 0
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.stack = new Stack();
+                return runPointer + 1;
+            },
+            "Initialize a stack"),
+
+        // Block 1
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.stack.push(0);
+                variables.stack.push(1);
+                return runPointer + 1;
+            },
+            "Add index 0 and 1 to the top of the stack"),
+
+        // Block 2
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.diagonals = [];
+                return runPointer+1;
+            },
+            "Initialize an empty list of diagonals"),
+
+        // Block 3
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.j = 1;
+                return runPointer + 1;
+            }),
+
+        // Block 4
+        new CodeBlock(
+            (variables, runPointer)=> {
+                if (variables.j < variables.pts.length - 1){
+                    variables.j = variables.j + 1;
+                    return runPointer + 1;
+                }
+                return runPointer + 12;
+            },
+            "For each point J in the polygon starting with the third point stopping after the second to last point"),
+
+        // Block 5
+        new CodeBlock(
+            (variables, runPointer)=> {
+                // console.log(variables.pts)
+                // console.log(variables.stack.peek())
+                // console.log(variables.j)
+                // console.log(variables.pts[variables.stack.peek()].chain)
+                // console.log(variables.pts[variables.j].chain)
+                if (variables.pts[variables.stack.peek()].chain !== variables.pts[variables.j].chain){
+                    return runPointer + 1;
+                }else{
+                    return runPointer + 4;
+                }
+            },
+            "\t\tIf the point at the top of the stack is on the same chain as J"),
+
+        // Block 6
+        new CodeBlock(
+            (variables, runPointer)=> {
+                if (variables.stack.size() > 1) {
+                    return runPointer + 1;
+                }
+                return runPointer + 2;
+            },
+            "\t\t\t\tWhile there are at least 2 points on the stack"),
+
+        // Block 7
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.u = variables.stack.pop();
+                variables.diagonals.push(new LineSegment(
+                    variables.pts[variables.u].pt,
+                    variables.pts[variables.j].pt));
+                return runPointer - 1;
+            },
+            "\t\t\t\t\t\tPop a point U off the top of the stack and add a diagonal from U to J"),
+
+        // Block 8
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.stack = new Stack();
+                variables.stack.push(variables.j - 1);
+                variables.stack.push(variables.j);
+                return runPointer + -4;
+            },
+            "\t\t\t\tClear the stack, then Push the point before J and J onto the stack"),
+
+        // Block 9
+        new CodeBlock(
+            (variables, runPointer)=> {
+                return runPointer + 1;
+            },
+            "\t\tOtherwise"),
+
+        // Block 10
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.u = variables.stack.pop();
+                variables.u_l = variables.u;
+                return runPointer + 1;
+            },
+            "\t\t\t\tPop a point off the top of the stack and set U and UL to that point"),
+
+        // Block 11
+        new CodeBlock(
+            (variables, runPointer)=> {
+                if ((!variables.stack.isEmpty()) && visible(variables.pts, variables.j, variables.u) ) {
+                    return runPointer + 1;
+                }
+                return runPointer + 4;
+            },
+            "\t\t\t\tWhile the stack is not empty and U is visible from J"),
+
+        // Block 12
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.diagonals.push(new LineSegment(
+                    variables.pts[variables.u].pt,
+                    variables.pts[variables.j].pt));
+                return runPointer + 1;
+            },
+            "\t\t\t\t\t\tAdd a diagonal from U to J"),
+
+        // Block 13
+        new CodeBlock(
+            (variables, runPointer)=> {
+                if (!variables.stack.isEmpty()) {
+                    return runPointer + 1;
+                }
+                return runPointer - 2;
+            },
+            "\t\t\t\t\t\tIf the stack is not empty"),
+
+        // Block 14
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.u = variables.stack.pop();
+                return runPointer - 3;
+            },
+            "\t\t\t\t\t\t\t\tSet U to a point popped off the top of the stack"),
+
+        // Block 15
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.stack.push(variables.u_l);
+                variables.stack.push(variables.j);
+                return runPointer - 11;
+            },
+            "\t\t\t\tPush UL and then J onto the stack"),
+
+        // Block 16
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.stack.pop()
+                return runPointer + 1;
+            },
+            "Pop the top off the stack and ignore it"),
+
+        // Block 17
+        new CodeBlock(
+            (variables, runPointer)=> {
+                if (variables.stack.size() > 1) {
+                    return runPointer + 1;
+                }
+                return runPointer + 3;
+            },
+            "While the stack has more than one point on it"),
+
+        // Block 18
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.u = variables.stack.pop();
+                return runPointer + 1;
+            },
+            "\t\tSet U to a point popped off the top of the stack"),
+
+        // Block 19
+        new CodeBlock(
+            (variables, runPointer)=> {
+                variables.diagonals.push(new LineSegment(variables.pts[variables.u].pt, variables.pts[variables.pts.length-1].pt));
+                return runPointer + 1;
+            },
+            "\t\tAdd a diagonal from U to the last point in the list of points"),
+
+        // Block 20
+        new CodeBlock(
+            (variables, runPointer)=> {
+                return -1;
+            }),
+
+    ]
+    return blocks;
 }
