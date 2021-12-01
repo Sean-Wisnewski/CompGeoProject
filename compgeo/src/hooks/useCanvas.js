@@ -46,16 +46,16 @@ function checkMonotonicity(pts) {
   // make a copy
   let sorted_pts = pts.slice(0, pts.length);
   sorted_pts.sort((a, b) => (a.x > b.x) ? 1 : -1)
-  //console.log(sorted_pts)
+  console.log(sorted_pts)
   let local_mins = 0;
   let n = pts.length;
   // js is dumb as shit, the "modulo" operator is actually just remainder, and doesn't
   // handle negative numbers correctly
   const modulo = (a, n) => ((a % n) + n) % n
   for (var i = 0; i < pts.length -1; i++) {
-    let pt_x = pts[i].x
-    let pt_x_p_1 = pts[modulo((i+1), n)].x
-    let pt_x_m_1 = pts[modulo((i-1), n)].x
+    let pt_x = sorted_pts[i].x
+    let pt_x_p_1 = sorted_pts[modulo((i+1), n)].x
+    let pt_x_m_1 = sorted_pts[modulo((i-1), n)].x
     //console.log(pt_x)
     //console.log(pt_x_p_1)
     //console.log(pt_x_m_1)
