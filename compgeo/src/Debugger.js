@@ -15,7 +15,7 @@ function sleep(ms) {
 
 function Debugger(){
 
-    const [variables, setVariables] = useState(new Map([["coordinates",[]], ["diagonals",[]]]));
+    const [visualVariables, setVisualVariables] = useState({coordinates:[], diagonals:[]});
     const [runPointer, setRunPointer] = useState(-1);
     const [addPoints, setAddPoints] = useState(true);
     const [tags, setTags] = useState(new Map());
@@ -24,34 +24,39 @@ function Debugger(){
     const [delay, setDelay] = useState(DELAY_DEFAULT);
     const [width, setWidth] = useState(0);
 
-    const setVar = (variable, value) => {
-        console.log(variable, value);
-        variables.set(variable, value);
-        setVariables(new Map(variables));
-    }
-    const getVar = (variable) => {
-        return variables.get(variable);
-    }
-    const clearVars = () => {
-        setVariables(new Map());
+    const variables = {...visualVariables};
+
+    // const setVar = (variable, value) => {
+    //     console.log(variable, value);
+    //     variables.set(variable, value);
+    //     setVariables(new Map(variables));
+    // }
+    // const getVar = (variable) => {
+    //     return variables.get(variable);
+    // }
+    // const clearVars = () => {
+    //     variables = new Map();
+    // }
+
+    const updateVisualVariables = () => {
+        setVisualVariables({...variables});
     }
     const setDiagonals = (value)=>{
-        setVar("diagonals", value);
+        variables.diagonals = value;
     }
     const setCoordinates = (value)=>{
-        setVar("coordinates", value);
+        variables.coordinates = value;
     }
 
-    const [canvasRef, canvasWidth, canvasHeight ] = useCanvas(addPoints, getVar);
+    const [canvasRef, canvasWidth, canvasHeight ] = useCanvas(addPoints, visualVariables);
 
+    // function tagOn(tag){
+    //     tags.set(tag, true);
+    //     setTags(new Map(tags));
+    //     // console.log(tags);
+    // }
 
-    function tagOn(tag){
-        tags.set(tag, true);
-        setTags(new Map(tags));
-        // console.log(tags);
-    }
-
-    async function pause(tag){
+    async function pause(){
         await sleep(delay);
     }
 
@@ -61,23 +66,25 @@ function Debugger(){
         // console.log(tags);
     }
 
-    const pushDiag = (diag) => {
-        getVar("diagonals").push(diag);
-        setVar("diagonals", [...getVar("diagonals")]);
-    }
-
-    const clearDiag = () => {
-        setVar("diagonals",[]);
-    }
+    // const pushDiag = (diag) => {
+    //     getVar("diagonals").push(diag);
+    //     setVar("diagonals", [...getVar("diagonals")]);
+    // }
+    //
+    // const clearDiag = () => {
+    //     setVar("diagonals",[]);
+    // }
 
     const process = () => {
-        getDiagonals(getVar, setVar, setAddPoints);
+        getDiagonals(variables, setAddPoints);
+        updateVisualVariables();
     }
 
     const handleCanvasClick=(event)=>{
         if (addPoints) {
             const currentCoord = {x: event.clientX, y: event.clientY};
-            setCoordinates([...getVar("coordinates"), currentCoord]);
+            setCoordinates([...visualVariables.coordinates, currentCoord]);
+            updateVisualVariables();
         }
     };
 
@@ -90,6 +97,8 @@ function Debugger(){
           console.log("changing color")
           planes[i].style.backgroundColor='white'
         }
+        updateVisualVariables();
+
     };
 
     const onSecondaryPaneSizeChange = (width) => {
@@ -115,6 +124,7 @@ function Debugger(){
         <div className="pane-2">
             <Pseudocode run={process} clear={handleClearCanvas} step={Step} tags={tags}
                         delay={delay} setDelay={setDelay}
+                        variables={variables}
                         stepping={stepping} setStepping={setStepping}/>
             <Description />
         </div>

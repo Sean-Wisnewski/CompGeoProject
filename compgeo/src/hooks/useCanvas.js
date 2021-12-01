@@ -75,7 +75,7 @@ function checkMonotonicity(pts) {
   }
 }
 
-export function useCanvas(addPoints, getVar){
+export function useCanvas(addPoints, variables){
     const canvasRef = useRef(null);
 
     useEffect(()=>{
@@ -84,8 +84,8 @@ export function useCanvas(addPoints, getVar){
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
         let isMonotone;
-        if (getVar("coordinates").length > 2) {
-          isMonotone = checkMonotonicity(getVar("coordinates"));
+        if (variables.coordinates.length > 2) {
+          isMonotone = checkMonotonicity(variables.coordinates);
         }
         else {
           isMonotone = true;
@@ -108,12 +108,12 @@ export function useCanvas(addPoints, getVar){
         }else{
             color = 'black';
         }
-        getVar("coordinates").forEach((coordinate)=>{draw(ctx, coordinate)});
-        if (getVar("coordinates").length > 1) {
-            for (let i = 0; i < getVar("coordinates").length - 1; i++) {
-                drawline(ctx, getVar("coordinates")[i], getVar("coordinates")[i + 1], color);
+        variables.coordinates.forEach((coordinate)=>{draw(ctx, coordinate)});
+        if (variables.coordinates.length > 1) {
+            for (let i = 0; i < variables.coordinates.length - 1; i++) {
+                drawline(ctx, variables.coordinates[i], variables.coordinates[i + 1], color);
             }
-            drawline(ctx, getVar("coordinates")[getVar("coordinates").length - 1], getVar("coordinates")[0], color);
+            drawline(ctx, variables.coordinates[variables.coordinates.length - 1], variables.coordinates[0], color);
         }
 
         if (FUNKIFY){
@@ -121,8 +121,8 @@ export function useCanvas(addPoints, getVar){
         }else{
             color = 'green';
         }
-        if (getVar("diagonals").length >= 0){
-            for (const diag of getVar("diagonals")){
+        if (variables.diagonals.length >= 0){
+            for (const diag of variables.diagonals){
                 drawline(ctx, diag.pt0, diag.pt1, color);
             }
         }

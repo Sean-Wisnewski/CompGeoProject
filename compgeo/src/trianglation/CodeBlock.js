@@ -3,8 +3,8 @@ import React from "react";
 export default class CodeBlock extends React.Component{
     constructor(props) {
         super(props);
-        this.run = (getVar, setVar) =>{
-            return this.props.run(getVar, setVar);
+        this.run = (variables, runPointer) =>{
+            return this.props.run(variables, runPointer);
         }
         this.pseudocode = props.pseudocode
         this.state = {
