@@ -52,13 +52,13 @@ function checkMonotonicity(pts) {
     //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
     //console.log(upper)
     //console.log(lower)
-    console.log("upper", upper)
+    // console.log("upper", upper)
     for(var i = 0; i < upper.length-1; i++) {
         if (upper[i].x > upper[i+1].x) {
             return false
         }
     }
-    console.log("lower", lower      )
+    // console.log("lower", lower      )
     for(var i = 0; i < lower.length-1; i++) {
         if (lower[i].x > lower[i+1].x) {
             return false

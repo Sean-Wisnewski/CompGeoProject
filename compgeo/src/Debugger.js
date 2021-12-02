@@ -37,26 +37,26 @@ function Debugger(){
 
     function segment_distance(p1, p2, newp) {
         const l2 = l2_dist_square(p1, p2);
-        console.log("l2", l2)
+        // console.log("l2", l2)
         if (l2 === 0.0) return l2_dist(p1, newp);
         const t = Math.max(0, Math.min(1, ((newp.x - p1.x)*(p2.x - p1.x)+(newp.y - p1.y)*(p2.y - p1.y))/ l2));
         const projection = {x:p1.x + t * (p2.x - p1.x), y:p1.y + t * (p2.y - p1.y)};  // Projection falls on the segment
-        console.log("projection", projection)
+        // console.log("projection", projection)
         return l2_dist(newp, projection);
     }
 
     function find_insertion_point(coords, new_coord) {
-        console.log(coords)
+        // console.log(coords)
         let index = coords.length;
         let dist = segment_distance(coords[coords.length-1], coords[0], new_coord)
-        console.log(dist)
+        // console.log(dist)
         for (let i = 0; i+1 < coords.length; i++) {
             let d = segment_distance(coords[i], coords[i+1], new_coord);
-            console.log(d)
+            // console.log(d)
             if (d < dist) {
                 index = i+1;
                 dist = d
-                console.log("new index",index)
+                // console.log("new index",index)
             }
         }
         return index
@@ -79,7 +79,7 @@ function Debugger(){
         variables.coordinates = [];
         variables.diagonals = [];
         let planes = document.getElementsByClassName('App-canvas');
-        console.log(planes)
+        // console.log(planes)
         for(var i = 0; i < planes.length; i++) {
           console.log("changing color")
           planes[i].style.backgroundColor='white'

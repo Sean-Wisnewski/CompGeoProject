@@ -41,22 +41,23 @@ function Pseudocode({variables, updateVisualVariables, setAddPoints, addPoints, 
     }
     async function process(){
         if (rp >= 0 && rp < blocks.length) {
-            console.log("rp:", rp);
+            // console.log("rp:", rp);
             let nrp = blocks[rp].run(variables, rp);
             if (blocks[rp].pseudocode != null){
                 await pause()
             }
             setRP(nrp);
             updateVisualVariables();
-            if (rp >= 0  && (blocks[rp].pseudocode == null || (!variables.stepping))){
+            if ((rp >= 0  && blocks[rp].pseudocode == null )|| (!variables.stepping)){
                 await process();
             }
-            if (rp < 0 && !addPoints) {
-                    setAddPoints(true);
-            }
-        } else if (!addPoints) {
+
+        }else if (rp < 0) {
             setAddPoints(true);
+            updateVisualVariables();
+            console.log("setAddPoints", true);
         }
+
         console.log("Finished");
     }
 

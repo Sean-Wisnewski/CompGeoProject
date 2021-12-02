@@ -79,22 +79,53 @@ export function split_to_chains(pts){
     return all_pts
 }
 
-export function splitPoints(polygon){
-    let all_pts = split_to_chains(polygon);
-    let top_points = [];
-    let bot_points = [];
-    for (const element of all_pts){
-        // console.log(element.chain)
-        if (element.chain === "lower"){
-            bot_points.push(element.pt);
-            // console.log("print Lower")
-        }else{
-            top_points.push(element.pt);
-            // console.log("print Upper")
+export function splitPoints(polygon) {
+    let pt_min = polygon[0];
+    let pt_max = polygon[0];
+    let min_index = 0;
+    let max_index = 0;
+    for (let i = 0; i < polygon.length; i++) {
+        if (polygon[i].x < pt_min.x) {
+            pt_min = polygon[i];
+            min_index = i;
+        }
+        if (polygon[i].x > pt_max.x) {
+            pt_max = polygon[i];
+            max_index = i;
         }
     }
+    let top_points = [];
+    let bot_points = [];
+
+    for (let i = min_index; i !== max_index; i = (i + 1) % polygon.length) {
+        top_points.push(polygon[i])
+    }
+    top_points.push(polygon[max_index])
+
+    for (let i = min_index; i !== max_index; i = (i + polygon.length - 1) % polygon.length) {
+        bot_points.push(polygon[i])
+    }
+    bot_points.push(polygon[max_index])
+
     return [bot_points, top_points];
 }
+
+// export function splitPoints(polygon){
+//     let all_pts = split_to_chains(polygon);
+//     let top_points = [];
+//     let bot_points = [];
+//     for (const element of all_pts){
+//         // console.log(element.chain)
+//         if (element.chain === "lower"){
+//             bot_points.push(element.pt);
+//             // console.log("print Lower")
+//         }else{
+//             top_points.push(element.pt);
+//             // console.log("print Upper")
+//         }
+//     }
+//     return [bot_points, top_points];
+// }
 
 function orient_test(p, q, r) {
     return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
@@ -257,8 +288,8 @@ async function x_monotone_triangulation(variables){
 }
 
 export async function getDiagonals(variables, setAddPoints){
-    setAddPoints(false);
-    // tagOn("split");
+    // setAddPoints(false);
+    // tagOn(F"split");
     // await pause("split");
     variables.pts = split_to_chains(variables.coordinates);
     // tagOff("split");
@@ -267,7 +298,7 @@ export async function getDiagonals(variables, setAddPoints){
     await x_monotone_triangulation(variables);
 
     // tagOff("diag");
-    setAddPoints(true);
+    // setAddPoints(true);
     console.log("finished");
 }
 
@@ -308,7 +339,7 @@ export function getBlocks(){
         // Block 4
         new CodeBlock(
             (variables, runPointer)=> {
-                if (variables.j < variables.pts.length - 1){
+                if (variables.j < variables.pts.length - 2){
                     variables.j = variables.j + 1;
                     return runPointer + 1;
                 }
