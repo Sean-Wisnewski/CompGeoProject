@@ -19,11 +19,30 @@ function l2_dist(pt0, pt1) {
 
 function find_insertion_point(coords, new_coord) {
   //console.log(new_coord)
-  let dists = coords.map(function (pt) {
-    return l2_dist(pt, new_coord)
-  })
-  dists.sort((a,b) => (a > b) ? 1 : -1)
-  console.log(dists)
+  var coords_with_dists = []
+  for (let i = 0; i < coords.length; i++) {
+    let pt = coords[i]
+    coords_with_dists.push([i, l2_dist(pt, new_coord)])
+  }
+  //console.log(coords_with_dists)
+  coords_with_dists.sort((a,b) => (a[1] > b[1]) ? 1 : -1)
+  let fixed_coords = []
+  console.log(coords_with_dists)
+  for (let i = 0; i < coords.length; i++) {
+    if (i != coords_with_dists[0][0] && i != coords_with_dists[1][0]){
+      fixed_coords.push(coords[i])
+    }
+  }
+  fixed_coords.push(coords[coords_with_dists[0][0]])
+  fixed_coords.push(new_coord)
+  fixed_coords.push(coords[coords_with_dists[1][0]])
+  console.log(fixed_coords)
+  return fixed_coords
+  //let dists = coords.map(function (pt) {
+   // return l2_dist(pt, new_coord)
+  //})
+  //dists.sort((a,b) => (a > b) ? 1 : -1)
+  //console.log(dists)
 }
 
 function Debugger(){
@@ -71,8 +90,13 @@ function Debugger(){
     const handleCanvasClick=(event)=>{
         if (addPoints) {
             const currentCoord = {x: event.clientX, y: event.clientY};
-            find_insertion_point(coordinates, currentCoord)
-            setCoordinates([...coordinates, currentCoord]);
+            if (coordinates.length > 1){
+              let new_coords = find_insertion_point(coordinates, currentCoord)
+              setCoordinates(new_coords);
+            }
+            else{
+              setCoordinates([...coordinates, currentCoord]);
+            }
         }
     };
 
