@@ -14,35 +14,37 @@ function sleep(ms) {
 }
 
 function l2_dist(pt0, pt1) {
-  return Math.sqrt(Math.pow((pt0.x-pt1.x), 2)+Math.pow((pt0.y-pt1.y), 2))
+    return Math.sqrt(l2_dist_square(pt0, pt1))
+}
+function l2_dist_square(pt0, pt1) {
+    return Math.pow((pt0.x-pt1.x), 2)+Math.pow((pt0.y-pt1.y), 2)
+}
+
+function segment_distance(p1, p2, newp) {
+    const l2 = l2_dist_square(p1, p2);
+    console.log("l2", l2)
+    if (l2 === 0.0) return l2_dist(p1, newp);
+    const t = Math.max(0, Math.min(1, ((newp.x - p1.x)*(p2.x - p1.x)+(newp.y - p1.y)*(p2.y - p1.y))/ l2));
+    const projection = {x:p1.x + t * (p2.x - p1.x), y:p1.y + t * (p2.y - p1.y)};  // Projection falls on the segment
+    console.log("projection", projection)
+    return l2_dist(newp, projection);
 }
 
 function find_insertion_point(coords, new_coord) {
-  //console.log(new_coord)
-  var coords_with_dists = []
-  for (let i = 0; i < coords.length; i++) {
-    let pt = coords[i]
-    coords_with_dists.push([i, l2_dist(pt, new_coord)])
-  }
-  //console.log(coords_with_dists)
-  coords_with_dists.sort((a,b) => (a[1] > b[1]) ? 1 : -1)
-  let fixed_coords = []
-  console.log(coords_with_dists)
-  for (let i = 0; i < coords.length; i++) {
-    if (i != coords_with_dists[0][0] && i != coords_with_dists[1][0]){
-      fixed_coords.push(coords[i])
+    console.log(coords)
+    let index = coords.length;
+    let dist = segment_distance(coords[coords.length-1], coords[0], new_coord)
+    console.log(dist)
+    for (let i = 0; i+1 < coords.length; i++) {
+        let d = segment_distance(coords[i], coords[i+1], new_coord);
+        console.log(d)
+        if (d < dist) {
+            index = i+1;
+            dist = d
+            console.log("new index",index)
+        }
     }
-  }
-  fixed_coords.push(coords[coords_with_dists[0][0]])
-  fixed_coords.push(new_coord)
-  fixed_coords.push(coords[coords_with_dists[1][0]])
-  console.log(fixed_coords)
-  return fixed_coords
-  //let dists = coords.map(function (pt) {
-   // return l2_dist(pt, new_coord)
-  //})
-  //dists.sort((a,b) => (a > b) ? 1 : -1)
-  //console.log(dists)
+    return index
 }
 
 function Debugger(){
@@ -90,9 +92,11 @@ function Debugger(){
     const handleCanvasClick=(event)=>{
         if (addPoints) {
             const currentCoord = {x: event.clientX, y: event.clientY};
-            if (coordinates.length > 1){
-              let new_coords = find_insertion_point(coordinates, currentCoord)
-              setCoordinates(new_coords);
+            if (coordinates.length > 2){
+                let new_index = find_insertion_point(coordinates, currentCoord)
+                console.log(new_index)
+                coordinates.splice(new_index, 0, currentCoord)
+                setCoordinates([...coordinates]);
             }
             else{
               setCoordinates([...coordinates, currentCoord]);
