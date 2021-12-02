@@ -43,6 +43,29 @@ export function drawline(ctx, start, end, color="black"){
 };
 
 function checkMonotonicity(pts) {
+  // these are created in sorted order, so the monotonicity will always be true....
+  let all_pts = split_to_chains(pts)
+  let upper = all_pts.filter(elem => elem.chain === "upper")
+  let lower = all_pts.filter(elem => elem.chain === "lower")
+  //upper.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+  //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+  console.log(upper)
+  console.log(lower)
+  for(var i = 0; i < upper.length-1; i++) {
+    if (upper[i].pt.x > upper[i+1].pt.x) {
+      return false
+    }
+  }
+  for(var i = 0; i < lower.length-1; i++) {
+    if (lower[i].pt.x > lower[i+1].pt.x) {
+      return false
+    }
+  }
+  return true
+}
+
+/**
+function checkMonotonicity(pts) {
   // make a copy
   let sorted_pts = pts.slice(0, pts.length);
   sorted_pts.sort((a, b) => (a.x > b.x) ? 1 : -1)
@@ -74,6 +97,7 @@ function checkMonotonicity(pts) {
 
   }
 }
+**/
 
 export function useCanvas(addPoints, coordinates, diagonals){
     const canvasRef = useRef(null);
