@@ -43,36 +43,28 @@ export function drawline(ctx, start, end, color="black"){
 };
 
 function checkMonotonicity(pts) {
-  // make a copy
-  let sorted_pts = pts.slice(0, pts.length);
-  sorted_pts.sort((a, b) => (a.x > b.x) ? 1 : -1)
-  //console.log(sorted_pts)
-  let local_mins = 0;
-  let n = pts.length;
-  // js is dumb as shit, the "modulo" operator is actually just remainder, and doesn't
-  // handle negative numbers correctly
-  const modulo = (a, n) => ((a % n) + n) % n
-  for (var i = 0; i < pts.length -1; i++) {
-    let pt_x = pts[i].x
-    let pt_x_p_1 = pts[modulo((i+1), n)].x
-    let pt_x_m_1 = pts[modulo((i-1), n)].x
-    //console.log(pt_x)
-    //console.log(pt_x_p_1)
-    //console.log(pt_x_m_1)
-    if (pt_x < pt_x_p_1 && pt_x < pt_x_m_1) {
-      local_mins++;
-    }
-  }
-  // console.log(local_mins)
-  if (local_mins == 1) {
-    // console.log("monotone");
-    return true;
-  }
-  else {
-    console.log("not monotone");
-    return false;
+    console.log("Checking:",pts)
+    //   // these are created in sorted order, so the monotonicity will always be true....
+    // let all_pts = split_to_chains()
+    let [upper, lower] = splitPoints(pts)
 
-  }
+    //upper.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+    //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+    //console.log(upper)
+    //console.log(lower)
+    console.log("upper", upper)
+    for(var i = 0; i < upper.length-1; i++) {
+        if (upper[i].x > upper[i+1].x) {
+            return false
+        }
+    }
+    console.log("lower", lower      )
+    for(var i = 0; i < lower.length-1; i++) {
+        if (lower[i].x > lower[i+1].x) {
+            return false
+        }
+    }
+    return true
 }
 
 export function useCanvas(addPoints, variables){
@@ -86,6 +78,7 @@ export function useCanvas(addPoints, variables){
         let isMonotone;
         if (variables.coordinates.length > 2) {
           isMonotone = checkMonotonicity(variables.coordinates);
+            console.log("isMonotone", isMonotone)
         }
         else {
           isMonotone = true;

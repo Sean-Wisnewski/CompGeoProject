@@ -51,6 +51,9 @@ function Pseudocode({variables, updateVisualVariables, setAddPoints, addPoints, 
             if (rp >= 0  && (blocks[rp].pseudocode == null || (!variables.stepping))){
                 await process();
             }
+            if (rp < 0 && !addPoints) {
+                    setAddPoints(true);
+            }
         } else if (!addPoints) {
             setAddPoints(true);
         }
