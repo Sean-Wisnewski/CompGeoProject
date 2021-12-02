@@ -49,8 +49,8 @@ function checkMonotonicity(pts) {
   let lower = all_pts.filter(elem => elem.chain === "lower")
   //upper.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
   //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
-  console.log(upper)
-  console.log(lower)
+  //console.log(upper)
+  //console.log(lower)
   for(var i = 0; i < upper.length-1; i++) {
     if (upper[i].pt.x > upper[i+1].pt.x) {
       return false

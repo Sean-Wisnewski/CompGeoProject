@@ -13,6 +13,19 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function l2_dist(pt0, pt1) {
+  return Math.sqrt(Math.pow((pt0.x-pt1.x), 2)+Math.pow((pt0.y-pt1.y), 2))
+}
+
+function find_insertion_point(coords, new_coord) {
+  //console.log(new_coord)
+  let dists = coords.map(function (pt) {
+    return l2_dist(pt, new_coord)
+  })
+  dists.sort((a,b) => (a > b) ? 1 : -1)
+  console.log(dists)
+}
+
 function Debugger(){
     const [coordinates, setCoordinates] = useState([]);
     const [diagonals, setDiagonals] = useState([]);
@@ -58,6 +71,7 @@ function Debugger(){
     const handleCanvasClick=(event)=>{
         if (addPoints) {
             const currentCoord = {x: event.clientX, y: event.clientY};
+            find_insertion_point(coordinates, currentCoord)
             setCoordinates([...coordinates, currentCoord]);
         }
     };
