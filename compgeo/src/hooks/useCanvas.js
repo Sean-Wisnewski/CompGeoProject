@@ -43,25 +43,28 @@ export function drawline(ctx, start, end, color="black"){
 };
 
 function checkMonotonicity(pts) {
-  // these are created in sorted order, so the monotonicity will always be true....
-  let all_pts = split_to_chains(pts)
-  let upper = all_pts.filter(elem => elem.chain === "upper")
-  let lower = all_pts.filter(elem => elem.chain === "lower")
+    console.log("Checking:",pts)
+    //   // these are created in sorted order, so the monotonicity will always be true....
+  // let all_pts = split_to_chains()
+    let [upper, lower] = splitPoints(pts)
+
   //upper.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
   //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
   //console.log(upper)
   //console.log(lower)
-  for(var i = 0; i < upper.length-1; i++) {
-    if (upper[i].pt.x > upper[i+1].pt.x) {
-      return false
+    console.log("upper", upper)
+    for(var i = 0; i < upper.length-1; i++) {
+        if (upper[i].x > upper[i+1].x) {
+            return false
+        }
     }
-  }
-  for(var i = 0; i < lower.length-1; i++) {
-    if (lower[i].pt.x > lower[i+1].pt.x) {
-      return false
+    console.log("lower", lower      )
+    for(var i = 0; i < lower.length-1; i++) {
+        if (lower[i].x > lower[i+1].x) {
+            return false
+        }
     }
-  }
-  return true
+    return true
 }
 
 /**
@@ -110,6 +113,7 @@ export function useCanvas(addPoints, coordinates, diagonals){
         var isMonotone;
         if (coordinates.length > 2) {
           isMonotone = checkMonotonicity(coordinates);
+
         }
         else {
           isMonotone = true;
