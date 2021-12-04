@@ -20,7 +20,7 @@ function Description(props) {
                 <li>Once the algorithm is complete, click on the "clear" button to clear the screen and start over!</li>
               </ol>
             <h2>Link to presentation video</h2>
-              <a href="https://drive.google.com/file/d/1Zsu9x0TUaf-SXQBZ7VI3tsz0ekeLloNy/view?usp=sharing">Video Presentation</a>
+              <a href="https://drive.google.com/file/d/1c0yOmDqqsK8Hx5jEih9g5iNzMZjJtayE/view">Video Presentation</a>
         </div>
       </div>
   )
