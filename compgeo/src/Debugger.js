@@ -99,8 +99,8 @@ function Debugger(){
             <canvas
                 className="App-canvas"
                 ref={canvasRef}
-                width={canvasWidth - width - 8}
-                height={canvasHeight - 4}
+                width={canvasWidth - width - 50}
+                height={canvasHeight - 5}
                 onClick={handleCanvasClick} />
         </div>
         <div className="pane-2">

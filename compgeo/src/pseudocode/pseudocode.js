@@ -43,7 +43,7 @@ function Pseudocode({variables, updateVisualVariables, setAddPoints, addPoints, 
         if (rp >= 0 && rp < blocks.length) {
             // console.log("rp:", rp);
             let nrp = blocks[rp].run(variables, rp);
-            if (blocks[rp].pseudocode != null){
+            if (blocks[rp].pseudocode != null && !variables.stepping){
                 await pause()
             }
             setRP(nrp);
@@ -62,11 +62,11 @@ function Pseudocode({variables, updateVisualVariables, setAddPoints, addPoints, 
     }
 
     return (
-        <div>
+        <div id="pseudocode">
             <div>
+                <button onClick={clear}>Clear</button>
                 <button onClick={start}>Run</button>
                 <button onClick={process}>Step</button>
-                <button onClick={clear}>Clear</button>
                 <button onClick={()=>{
                     variables.stepping = false;
                     updateVisualVariables();
@@ -76,10 +76,14 @@ function Pseudocode({variables, updateVisualVariables, setAddPoints, addPoints, 
                 <input type="text" pattern="[0-9]*"
                        id="delay" name="delay"
                        onInput={handleDelayChange} value={delay} />
-                <label > Stepping mode </label>
+
+                <label class="checkmark"> Stepping mode
+
                 <input type="checkbox"
                        id="stepping" name="stepping" onInput={handleCheck}  checked={variables.stepping}/>
+                </label>
             </div>
+            <hr/>
             <div>
                 {blocks.map((block, index) => {
                     if (index === runPointer){
