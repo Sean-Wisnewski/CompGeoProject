@@ -42,7 +42,7 @@ class LineSegment:
     """
     Since line segments are undirected, always put the point further to the right as the right endpoint
     """
-    def __init__(self, pt0, pt1, name):
+    def __init__(self, pt0, pt1, name=None):
         if pt0.x < pt1.x:
             self.pt0 = pt0
             self.pt1 = pt1
@@ -55,7 +55,32 @@ class LineSegment:
         return f"[{self.name}: ({self.pt0}), ({self.pt1})]"
 
     def __eq__(self, e2):
-        return self.pt0 == e2.pt0 and self.pt1 == e2.pt1
+        return self.pt0 == e2.pt0 and self.pt1 == e2.pt1 and self.name == e2.name
+
+class Event:
+    def __init__(self, pt, chain):
+        self.pt = pt
+        self.chain = chain
+
+    def __repr__(self):
+        return str(self.pt) + " "  + str(self.chain)
+
+class HelperEntry:
+    def __init__(self, vertex, seg, vertex_type):
+        self.vertex = vertex
+        self.seg = seg
+        self.vertex_type = vertex_type
+
+    def __repr__(self):
+        return f"{self.vertex} {self.seg} {self.vertex_type}"
+
+class EndptType(Enum):
+    LEFT = 1,
+    RIGHT = 2
+
+class VertexType(Enum):
+    MERGE = 1,
+    NOT_MERGE = 2
 
 class SubdivEvent(Enum):
     SPLIT=1,
