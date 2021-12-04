@@ -42,7 +42,32 @@ export function drawline(ctx, start, end, color="black"){
     ctx.restore();
 };
 
-export function useCanvas(addPoints, coordinates, diagonals){
+function checkMonotonicity(pts) {
+    console.log("Checking:",pts)
+    //   // these are created in sorted order, so the monotonicity will always be true....
+    // let all_pts = split_to_chains()
+    let [upper, lower] = splitPoints(pts)
+
+    //upper.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+    //lower.sort((a,b) => (a.pt.x > b.pt.x) ? 1 : -1)
+    //console.log(upper)
+    //console.log(lower)
+    // console.log("upper", upper)
+    for(var i = 0; i < upper.length-1; i++) {
+        if (upper[i].x > upper[i+1].x) {
+            return false
+        }
+    }
+    // console.log("lower", lower      )
+    for(var i = 0; i < lower.length-1; i++) {
+        if (lower[i].x > lower[i+1].x) {
+            return false
+        }
+    }
+    return true
+}
+
+export function useCanvas(addPoints, variables){
     const canvasRef = useRef(null);
 
     useEffect(()=>{
@@ -50,6 +75,24 @@ export function useCanvas(addPoints, coordinates, diagonals){
         const ctx = canvasObj.getContext('2d');
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
+        let isMonotone;
+        if (variables.coordinates.length > 2) {
+          isMonotone = checkMonotonicity(variables.coordinates);
+            console.log("isMonotone", isMonotone)
+        }
+        else {
+          isMonotone = true;
+        }
+
+        if (!isMonotone) {
+          let planes = document.getElementsByClassName('App-canvas');
+          console.log(planes)
+          for(let i = 0; i < planes.length; i++) {
+            console.log("changing color")
+            planes[i].style.backgroundColor='red'
+          }
+
+        }
 
         // draw all coordinates held in state
         let color;
@@ -58,48 +101,25 @@ export function useCanvas(addPoints, coordinates, diagonals){
         }else{
             color = 'black';
         }
-        coordinates.forEach((coordinate)=>{draw(ctx, coordinate)});
-        if (coordinates.length > 1) {
-            for (let i = 0; i < coordinates.length - 1; i++) {
-                drawline(ctx, coordinates[i], coordinates[i + 1], color);
+        variables.coordinates.forEach((coordinate)=>{draw(ctx, coordinate)});
+        if (variables.coordinates.length > 1) {
+            for (let i = 0; i < variables.coordinates.length - 1; i++) {
+                drawline(ctx, variables.coordinates[i], variables.coordinates[i + 1], color);
             }
-            drawline(ctx, coordinates[coordinates.length - 1], coordinates[0], color);
+            drawline(ctx, variables.coordinates[variables.coordinates.length - 1], variables.coordinates[0], color);
         }
-
-        // var [bot_points, top_points] = splitPoints(coordinates);
-        // if (top_points.length > 1) {
-        //     for (let i = 0; i < top_points.length - 1; i++) {
-        //         drawline(ctx, top_points[i], top_points[i + 1], "red");
-        //     }
-        //     drawline(ctx, top_points[top_points.length - 1], top_points[0], "red");
-        // }
-        // if (bot_points.length > 1) {
-        //     for (let i = 0; i < bot_points.length - 1; i++) {
-        //         drawline(ctx, bot_points[i], bot_points[i + 1], "blue");
-        //     }
-        //     console.log(bot_points)
-        //     drawline(ctx, bot_points[bot_points.length - 1], bot_points[0],"blue");
-        // }
-
-        // let all_pts = split_to_chains(coordinates);
-        // console.log("All out");
-        // console.log(all_pts)
-        // if (all_pts.length > 1) {
-        //     for (let i = 0; i < all_pts.length - 1; i++) {
-        //         drawline(ctx, all_pts[i].pt, all_pts[i + 1].pt, "orange");
-        //     }
-        // }
 
         if (FUNKIFY){
             color = 'red';
         }else{
             color = 'green';
         }
-        if (diagonals.length >= 0){
-            for (const diag of diagonals){
+        if (variables.diagonals.length >= 0){
+            for (const diag of variables.diagonals){
                 drawline(ctx, diag.pt0, diag.pt1, color);
             }
         }
+
     });
 
     return [ canvasRef, canvasWidth, canvasHeight ];
